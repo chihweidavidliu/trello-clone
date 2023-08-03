@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { mockColumns } from "../../mock-data";
+import BoardPageClient from "./BoardPageClient";
 
 async function getBoardData(id: string) {
   // const res = await fetch("https://api.example.com/...");
@@ -25,12 +26,8 @@ export default async function BoardPage({ params }: BoardPageProps) {
 
   console.log("columns", columns);
   return (
-    <main className="min-h-screen">
-      <h1>Board {params.id}</h1>
-
-      {columns.map((col) => (
-        <div key={col.id}>{col.title}</div>
-      ))}
+    <main className="min-h-screen text-center bg-white">
+      <BoardPageClient initialColumns={columns || []} />
     </main>
   );
 }
