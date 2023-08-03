@@ -1,0 +1,11 @@
+{
+  "name": "shared-utils",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "license": "MIT",
+  "scripts": {
+    "tsc": "tsc",
+    "watch": "tsc -w",
+    "check-types": "tsc --noEmit"
+  }
+}
