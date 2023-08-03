@@ -11,7 +11,7 @@ const TicketCard = ({ ticket, columnId }: TicketProps) => {
   return (
     <div
       data-column-id={columnId}
-      className="mt-3 border-1 border-gray-600 rounded-sm bg-white shadow-md cursor-pointer p-3 min-h-[5rem]"
+      className="mt-3 border-2 border-gray-100 hover:bg-gray-200 rounded-md bg-white shadow-sm cursor-pointer p-3 min-h-[5rem]"
       draggable
       id={ticket.id}
     >

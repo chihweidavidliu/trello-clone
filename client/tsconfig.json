@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/board/[id]"
+    "app/app/board/[id]"
   ],
   "exclude": ["node_modules"]
 }

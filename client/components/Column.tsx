@@ -31,10 +31,10 @@ const ColumnComponent = ({
 
   return (
     <div
-      className="width-[15rem] min-w-[15rem] border-2 py-4 px-2 rounded-md bg-gray-200"
+      className="width-[18rem] min-w-[18rem] max-w-[18rem] py-4 px-3 rounded-md border-2 border-slate-300 bg-slate-100 shadow-lg"
       id={id}
     >
-      <h2 className="text-lg">{title}</h2>
+      <h2 className="text-lg text-blue-950 font-semibold">{title}</h2>
       <div className="h-full" id={id + "-ticket-list"}>
         {tickets.length > 0 ? (
           tickets
@@ -64,6 +64,7 @@ const ColumnComponent = ({
         ) : (
           <Dropzone
             id={id + "-placeholder-dropzone"}
+            isVisible
             handleDrop={(ticketId: string, insertBefore) => {
               const newIndex = 0;
 

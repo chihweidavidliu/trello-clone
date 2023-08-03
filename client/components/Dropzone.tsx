@@ -1,12 +1,22 @@
 "use-client";
+import { cva } from "class-variance-authority";
 import { PropsWithChildren, useRef, useState } from "react";
+
+const dropzone = cva(["min-h-[5rem] rounded-md"], {
+  variants: {
+    visible: {
+      true: ["bg-gray-300", "mt-3"],
+    },
+  },
+});
 
 export interface DropzoneProps extends PropsWithChildren {
   id: string;
   handleDrop: (dropzoneId: string, insertBefore: boolean) => Promise<void>;
+  isVisible?: boolean;
 }
 
-const Dropzone = ({ children, id, handleDrop }: DropzoneProps) => {
+const Dropzone = ({ children, id, handleDrop, isVisible }: DropzoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const insertRef = useRef<boolean | null | null>(null);
@@ -36,7 +46,7 @@ const Dropzone = ({ children, id, handleDrop }: DropzoneProps) => {
 
     const shadow = document.createElement("div");
 
-    shadow.className = `bg-gray-700 h-[5rem] my-3 rounded-md`;
+    shadow.className = `bg-gray-400 h-[5rem] my-3 rounded-md`;
 
     shadowRef.current = shadow;
     if (!insertBefore) {
@@ -120,7 +130,7 @@ const Dropzone = ({ children, id, handleDrop }: DropzoneProps) => {
 
   return (
     <div
-      className="dropzone min-h-[5rem]"
+      className={dropzone({ visible: isVisible })}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
       onDragOver={onDragOver}

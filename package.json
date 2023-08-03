@@ -1,0 +1,30 @@
+{
+  "name": "trello-clone",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nx run-many -t test",
+    "build": "nx run-many -t build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chihweidavidliu/trello-clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chihweidavidliu/trello-clone/issues"
+  },
+  "homepage": "https://github.com/chihweidavidliu/trello-clone#readme",
+  "devDependencies": {
+    "nx": "16.6.0",
+    "nx-cloud": "latest"
+  }
+}
