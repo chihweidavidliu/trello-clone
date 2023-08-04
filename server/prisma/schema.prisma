@@ -31,27 +31,27 @@ model TicketAssignedToUser {
 }
 
 model Board {
-  id                   String                @id @default(uuid()) @db.Uuid
-  title                String
-  columns              Column[]
-  boardUserPermissions BoardUserPermission[]
-  createdByUserId      String
-  createdAt            DateTime              @default(now())
+  id              String          @id @default(uuid()) @db.Uuid
+  title           String
+  columns         Column[]
+  boardUserRoles  BoardUserRole[]
+  createdByUserId String
+  createdAt       DateTime        @default(now())
 }
 
-model BoardUserPermission {
-  id           String     @id @default(uuid()) @db.Uuid
-  userId       String
-  boardId      String
-  board        Board      @relation(fields: [boardId], references: [id])
-  permissionId Int
-  permission   Permission @relation(fields: [permissionId], references: [id])
+model BoardUserRole {
+  id      String @id @default(uuid()) @db.Uuid
+  userId  String
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id])
+  roleId  Int
+  role    Role   @relation(fields: [roleId], references: [id])
 }
 
-model Permission {
-  id                   Int                   @id @default(autoincrement())
-  type                 String                @unique
-  boardUserPermissions BoardUserPermission[]
+model Role {
+  id             Int             @id @default(autoincrement())
+  type           String          @unique
+  boardUserRoles BoardUserRole[]
 }
 
 model Column {
