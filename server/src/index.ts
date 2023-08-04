@@ -4,6 +4,7 @@ import { boardsRouter } from "./components/boards/boards.routes";
 import { config } from "./config";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
+import { hellp } from "shared-utils";
 
 const { port } = config();
 // TODO: logging
@@ -26,5 +27,6 @@ app.all("*", () => {
 
 app.use(errorHandler);
 app.listen(port, () => {
+  console.log("hellp", hellp);
   console.log(`Server listening on port ${process.env.PORT}`);
 });
