@@ -13,7 +13,8 @@
     "test": "nx run-many -t test",
     "check-types": "nx run-many -t check-types",
     "tsc": "nx run-many -t tsc",
-    "build": "nx run-many -t build"
+    "build": "nx run-many -t build",
+    "watch": "nx run-many -t watch"
   },
   "repository": {
     "type": "git",

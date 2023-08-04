@@ -9,7 +9,6 @@
     "dev": "ts-node-dev -r dotenv/config ./src/index.ts",
     "build": "tsc",
     "start": "node -r dotenv/config ./build/index.js",
-    "watch": "tsc -w",
     "check-types": "tsc --noEmit"
   },
   "keywords": [],
