@@ -9,3 +9,56 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Ticket {
+  id              String                 @id @default(uuid()) @db.Uuid
+  title           String
+  description     String
+  columnId        String
+  createdByUserId String
+  assignedToUsers TicketAssignedToUser[]
+  column          Column                 @relation(fields: [columnId], references: [id])
+  index           Int
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @default(now())
+}
+
+model TicketAssignedToUser {
+  id       String @id @default(uuid()) @db.Uuid
+  userId   String
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+}
+
+model Board {
+  id                   String                @id @default(uuid()) @db.Uuid
+  title                String
+  columns              Column[]
+  boardUserPermissions BoardUserPermission[]
+  createdByUserId      String
+  createdAt            DateTime              @default(now())
+}
+
+model BoardUserPermission {
+  id           String     @id @default(uuid()) @db.Uuid
+  userId       String
+  boardId      String
+  board        Board      @relation(fields: [boardId], references: [id])
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+}
+
+model Permission {
+  id                   Int                   @id @default(autoincrement())
+  type                 String                @unique
+  boardUserPermissions BoardUserPermission[]
+}
+
+model Column {
+  id      String   @id @default(uuid()) @db.Uuid
+  title   String
+  boardId String
+  index   Int
+  tickets Ticket[]
+  Board   Board    @relation(fields: [boardId], references: [id])
+}
