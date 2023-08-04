@@ -12,6 +12,9 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["{projectRoot}/build", "{projectRoot}/.next"]
+    },
+    "tsc": {
+      "outputs": ["{projectRoot}/build"]
     }
   },
   "affected": {
