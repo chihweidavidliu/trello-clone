@@ -14,7 +14,7 @@ model Ticket {
   id              String                 @id @default(uuid()) @db.Uuid
   title           String
   description     String
-  columnId        String
+  columnId        String                 @db.Uuid
   createdByUserId String
   assignedToUsers TicketAssignedToUser[]
   column          Column                 @relation(fields: [columnId], references: [id])
@@ -26,7 +26,7 @@ model Ticket {
 model TicketAssignedToUser {
   id       String @id @default(uuid()) @db.Uuid
   userId   String
-  ticketId String
+  ticketId String @db.Uuid
   ticket   Ticket @relation(fields: [ticketId], references: [id])
 }
 
@@ -42,7 +42,7 @@ model Board {
 model BoardUserRole {
   id      String @id @default(uuid()) @db.Uuid
   userId  String
-  boardId String
+  boardId String @db.Uuid
   board   Board  @relation(fields: [boardId], references: [id])
   roleId  Int
   role    Role   @relation(fields: [roleId], references: [id])
@@ -57,7 +57,7 @@ model Role {
 model Column {
   id      String   @id @default(uuid()) @db.Uuid
   title   String
-  boardId String
+  boardId String   @db.Uuid
   index   Int
   tickets Ticket[]
   Board   Board    @relation(fields: [boardId], references: [id])
