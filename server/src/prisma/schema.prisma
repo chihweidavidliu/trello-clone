@@ -50,7 +50,7 @@ model BoardUserRole {
 
 model Role {
   id             Int             @id @default(autoincrement())
-  type           String          @unique
+  name           String          @unique
   boardUserRoles BoardUserRole[]
 }
 
