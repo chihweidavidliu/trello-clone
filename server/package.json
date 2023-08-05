@@ -11,6 +11,10 @@
     "start": "node -r dotenv/config ./build/index.js",
     "check-types": "tsc --noEmit"
   },
+  "prisma": {
+    "schema": "./src/prisma/schema.prisma",
+    "seed": "ts-node-dev -r dotenv/config ./src/prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
