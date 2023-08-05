@@ -1,11 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
-// TODO: moved this to shared utils rbac
-export enum UserRole {
-  ADMIN = "ADMIN",
-  EDITOR = "EDITOR",
-  VIEWER = "VIEWER",
-}
+import { UserRole } from "shared-utils";
 
 const prisma = new PrismaClient();
 async function main() {
