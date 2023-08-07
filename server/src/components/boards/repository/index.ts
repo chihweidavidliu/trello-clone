@@ -1,10 +1,8 @@
 import { Board, PrismaClient } from "@prisma/client";
 
-interface RepositoryProps {
-  dbContext: PrismaClient;
-}
-export interface Repository {
-  dbContext: PrismaClient;
+export interface BoardIncludeOptions {
+  columns: boolean;
+  tickets: boolean;
 }
 
 export interface BoardsRepositoryProps {
@@ -20,14 +18,31 @@ export class BoardsRepository {
     this.dbContext = dbContext;
   }
 
-  async getById(id: string): Promise<Board | null> {
+  parseIncludeOptions(includeOptions?: BoardIncludeOptions) {
+    return {
+      columns: includeOptions?.columns
+        ? {
+            include: includeOptions.tickets
+              ? {
+                  tickets: true,
+                }
+              : undefined,
+          }
+        : undefined,
+    };
+  }
+
+  async getById(
+    id: string,
+    options?: {
+      include?: BoardIncludeOptions;
+    }
+  ): Promise<Board | null> {
     const board = await this.dbContext.board.findUnique({
       where: {
         id,
       },
-      include: {
-        columns: true,
-      },
+      include: this.parseIncludeOptions(options?.include),
     });
 
     return board;
