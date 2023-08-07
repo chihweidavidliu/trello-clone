@@ -1,12 +1,18 @@
-import express from "express";
+import express, { Router } from "express";
 
-export const boardsRouter = express.Router();
+export interface BoardRouterProps {}
 
-boardsRouter.get("/boards", async (req, res) => {
-  res.status(200).json({
-    errors: null,
-    data: {
-      hello: false,
-    },
+export const createBoardsRouter = ({}: BoardRouterProps) => {
+  const router = express.Router();
+
+  router.get("/boards", async (req, res) => {
+    res.status(200).json({
+      errors: null,
+      data: {
+        hello: false,
+      },
+    });
   });
-});
+
+  return router;
+};

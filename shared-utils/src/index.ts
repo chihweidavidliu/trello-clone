@@ -1,1 +1,1 @@
-export const hellp = true;
+export * from "./rbac";
