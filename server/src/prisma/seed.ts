@@ -27,6 +27,47 @@ async function main() {
     },
   });
   console.log({ adminRole, editorRole, viewerRole });
+
+  const board = await prisma.board.create({
+    data: {
+      title: "Test board",
+      createdByUserId: "test-user",
+    },
+  });
+
+  const toDoColumn = await prisma.column.create({
+    data: {
+      title: "To do",
+      boardId: board.id,
+      index: 0,
+      tickets: {
+        create: {
+          title: "Add tests",
+          description: "This is a description",
+          createdByUserId: "test-user",
+          index: 0,
+        },
+      },
+    },
+  });
+
+  const inProgressCol = await prisma.column.create({
+    data: {
+      title: "In progress",
+      boardId: board.id,
+      index: 1,
+    },
+  });
+
+  const completedCol = await prisma.column.create({
+    data: {
+      title: "Completed",
+      boardId: board.id,
+      index: 2,
+    },
+  });
+
+  console.log({ board, columns: [toDoColumn, inProgressCol, completedCol] });
 }
 main()
   .then(async () => {
