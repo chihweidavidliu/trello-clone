@@ -1,14 +1,18 @@
+import { PrismaClient } from "@prisma/client";
 import express from "express";
 require("express-async-errors");
 import { createBoardsRouter } from "./components/boards/boards.routes";
+import { createBoardsController } from "./components/boards/controller";
+import { BoardsRepository } from "./components/boards/repository";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 
 export interface AppProps {
   port: number;
+  dbContext: PrismaClient;
 }
 
-export const createApp = ({ port }: AppProps) => {
+export const createApp = ({ port, dbContext }: AppProps) => {
   // TODO: logging
   const app = express();
   app.use(express.json());
@@ -20,7 +24,18 @@ export const createApp = ({ port }: AppProps) => {
     res.status(200).send("Ok");
   });
 
-  const boardsRouter = createBoardsRouter({});
+  const boardsRepository = new BoardsRepository({
+    dbContext,
+  });
+
+  const boardsController = createBoardsController({
+    boardsRepository,
+  });
+
+  const boardsRouter = createBoardsRouter({
+    boardsController,
+  });
+
   app.use(boardsRouter);
 
   app.all("*", () => {
