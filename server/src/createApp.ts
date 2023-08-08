@@ -43,9 +43,9 @@ export const createApp = ({ port, dbContext }: AppProps) => {
   });
 
   app.use(errorHandler);
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log(`Server listening on port ${process.env.PORT}`);
   });
 
-  return app;
+  return { app, server };
 };
