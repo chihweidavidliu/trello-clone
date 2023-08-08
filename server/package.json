@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "dotenv -e .env.test -- yarn docker:up && yarn prisma migrate deploy && jest -i --detectOpenHandles",
+    "test": "yarn docker:up && yarn migrate:test && dotenv -e .env.test -- jest -i --detectOpenHandles",
     "tsc": "tsc",
-    "dev": "ts-node-dev -r dotenv/config ./src/index.ts",
+    "dev": "dotenv -e .env -- ts-node-dev ./src/index.ts",
     "build": "tsc",
-    "start": "node -r dotenv/config ./build/index.js",
+    "start": "dotenv -e .env -- node ./build/index.js",
     "check-types": "tsc --noEmit",
-    "seed": "prisma db seed",
+    "seed": "dotenv -e .env -- prisma db seed",
+    "seed:test": "dotenv -e .env.test -- prisma db seed",
     "migrate": "dotenv -e .env -- npx prisma migrate deploy",
+    "migrate:test": "dotenv -e .env.test -- npx prisma migrate deploy",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
   },
@@ -24,7 +26,6 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "5.1.1",
-    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
     "shared-utils": "^1.0.0",
