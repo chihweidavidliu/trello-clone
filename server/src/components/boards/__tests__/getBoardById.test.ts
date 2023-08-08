@@ -27,4 +27,14 @@ describe("GET /boards/:boardId", () => {
       data: null,
     });
   });
+
+  it.todo("should return 401 if user is not authenticated");
+
+  it.todo(
+    "should return 401 if user does not have permission to view the board"
+  );
+
+  it.todo(
+    "should return 200 and board if user has view permissions on the board"
+  );
 });
