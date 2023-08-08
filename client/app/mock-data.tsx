@@ -14,7 +14,7 @@ export interface Ticket {
 
 const users: Record<string, User> = {
   david: {
-    id: "tewgge",
+    id: "test-user",
     email: "david@sourceful.com",
     fullname: "David Liu",
   },
