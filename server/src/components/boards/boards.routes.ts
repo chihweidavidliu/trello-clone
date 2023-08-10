@@ -1,5 +1,10 @@
 import express from "express";
-import { ApiResponse, Board as BoardContract } from "shared-utils";
+import {
+  ApiResponse,
+  Board as BoardContract,
+  CreateBoardSchema,
+} from "shared-utils";
+import { validateRequestBody } from "zod-express-middleware";
 
 import { BadRequestError } from "../../errors/bad-request-error";
 import { BoardsController } from "./controller";
@@ -31,8 +36,21 @@ export const createBoardsRouter = ({ boardsController }: BoardRouterProps) => {
       },
     };
 
-    res.status(200).json(response);
+    res.status(200).send(response);
   });
+
+  router.post(
+    "/boards",
+    validateRequestBody(CreateBoardSchema),
+    async (req, res) => {
+      res.status(200).send({
+        errors: null,
+        data: {
+          success: true,
+        },
+      });
+    }
+  );
 
   return router;
 };

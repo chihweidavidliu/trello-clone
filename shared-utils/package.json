@@ -4,7 +4,7 @@
   "main": "build/index.js",
   "license": "MIT",
   "scripts": {
-    "tsc": "tsc",
+    "tsc": "rm -rf ./build && tsc",
     "watch": "tsc -w",
     "check-types": "tsc --noEmit"
   },
