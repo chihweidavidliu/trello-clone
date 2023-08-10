@@ -22,7 +22,6 @@ export type CreateColumnPayload = z.infer<typeof CreateColumnSchema>;
 
 export const CreateBoardSchema = z.object({
   title: z.string(),
-  createdByUserId: z.string(),
   columns: z.array(CreateColumnSchema).optional(),
 });
 
