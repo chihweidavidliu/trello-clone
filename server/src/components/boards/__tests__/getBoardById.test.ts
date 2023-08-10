@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { PrismaClient } from "@prisma/client";
 import { createApp } from "../../../createApp";
 import { config } from "../../../config";
+import { createTestBoard } from "../../../utils/test-utils/createTestBoard";
 
 const { port, databaseUrl } = config();
 console.log("databaseUrl", databaseUrl);
@@ -19,49 +20,6 @@ afterEach(async () => {
   await client.boardUserRole.deleteMany();
   await client.board.deleteMany();
 });
-
-const createTestBoard = async (userId: string) => {
-  const board = await client.board.create({
-    data: {
-      title: "Test board",
-      createdByUserId: userId,
-    },
-  });
-
-  const toDoColumn = await client.column.create({
-    data: {
-      title: "To do",
-      boardId: board.id,
-      index: 0,
-      tickets: {
-        create: {
-          title: "Add tests",
-          description: "This is a description",
-          createdByUserId: userId,
-          index: 0,
-        },
-      },
-    },
-  });
-
-  const inProgressCol = await client.column.create({
-    data: {
-      title: "In progress",
-      boardId: board.id,
-      index: 1,
-    },
-  });
-
-  const completedCol = await client.column.create({
-    data: {
-      title: "Completed",
-      boardId: board.id,
-      index: 2,
-    },
-  });
-
-  return { board, toDoColumn, inProgressCol, completedCol };
-};
 
 describe("GET /boards/:boardId", () => {
   it("should return 400 if board does not exist", async () => {
@@ -85,7 +43,7 @@ describe("GET /boards/:boardId", () => {
   );
 
   it("should return 200 and board if user has view permissions on the board", async () => {
-    const { board } = await createTestBoard("test-user-woo");
+    const { board } = await createTestBoard(client, "test-user-woo");
     const response = await request(app).get("/boards/" + board.id);
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
@@ -101,7 +59,7 @@ describe("GET /boards/:boardId", () => {
 
   it("should include columns if 'include' query param is specified with 'columns'", async () => {
     const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard("test-user-woo");
+      await createTestBoard(client, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=columns"
     );
@@ -120,7 +78,7 @@ describe("GET /boards/:boardId", () => {
 
   it("should include tickets if 'include' query param is specified with 'columns' and 'tickets'", async () => {
     const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard("test-user-woo");
+      await createTestBoard(client, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=columns,tickets"
     );
@@ -156,8 +114,10 @@ describe("GET /boards/:boardId", () => {
   });
 
   it("should NOT include tickets if 'include' query param is specified with 'tickets' onlu", async () => {
-    const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard("test-user-woo");
+    const { board, toDoColumn } = await createTestBoard(
+      client,
+      "test-user-woo"
+    );
     const response = await request(app).get(
       "/boards/" + board.id + "?include=tickets"
     );
