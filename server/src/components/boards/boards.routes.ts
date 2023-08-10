@@ -1,4 +1,6 @@
 import express from "express";
+import { ApiResponse, Board as BoardContract } from "shared-utils";
+
 import { BadRequestError } from "../../errors/bad-request-error";
 import { BoardsController } from "./controller";
 
@@ -22,12 +24,14 @@ export const createBoardsRouter = ({ boardsController }: BoardRouterProps) => {
     });
     if (!board) throw new BadRequestError(`Could not find board with id ${id}`);
 
-    res.status(200).json({
+    const response: ApiResponse<{ board: BoardContract }> = {
       errors: null,
       data: {
         board,
       },
-    });
+    };
+
+    res.status(200).json(response);
   });
 
   return router;
