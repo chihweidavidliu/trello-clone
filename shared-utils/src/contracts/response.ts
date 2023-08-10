@@ -1,6 +1,6 @@
 export interface ApiError {
   message: string;
-  field?: string;
+  path?: (string | number)[];
 }
 
 export interface ApiResponse<T> {

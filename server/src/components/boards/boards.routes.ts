@@ -4,9 +4,8 @@ import {
   Board as BoardContract,
   CreateBoardSchema,
 } from "shared-utils";
-import { validateRequestBody } from "zod-express-middleware";
-
 import { BadRequestError } from "../../errors/bad-request-error";
+import { validateRequest } from "../../middlewares/validate-request";
 import { BoardsController } from "./controller";
 
 export interface BoardRouterProps {
@@ -41,7 +40,7 @@ export const createBoardsRouter = ({ boardsController }: BoardRouterProps) => {
 
   router.post(
     "/boards",
-    validateRequestBody(CreateBoardSchema),
+    validateRequest({ body: CreateBoardSchema }),
     async (req, res) => {
       res.status(200).send({
         errors: null,

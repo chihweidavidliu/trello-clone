@@ -6,5 +6,5 @@ export abstract class CustomError extends Error {
     Object.setPrototypeOf(this, CustomError.prototype);
   }
 
-  abstract toApiErrors(): { message: string; field?: string }[];
+  abstract toApiErrors(): { message: string; path?: (string | number)[] }[];
 }
