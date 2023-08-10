@@ -70,7 +70,10 @@ describe("GET /boards/:boardId", () => {
         board: {
           ...board,
           createdAt: board.createdAt.toISOString(),
-          columns: [toDoColumn, inProgressCol, completedCol],
+          columns: [toDoColumn, inProgressCol, completedCol].map((col) => ({
+            ...col,
+            createdAt: col.createdAt.toISOString(),
+          })),
         },
       },
     });
@@ -97,6 +100,7 @@ describe("GET /boards/:boardId", () => {
           columns: [
             {
               ...toDoColumn,
+              createdAt: toDoColumn.createdAt.toISOString(),
               tickets: [
                 {
                   ...todoTicket,
@@ -105,8 +109,16 @@ describe("GET /boards/:boardId", () => {
                 },
               ],
             },
-            { ...inProgressCol, tickets: [] },
-            { ...completedCol, tickets: [] },
+            {
+              ...inProgressCol,
+              tickets: [],
+              createdAt: inProgressCol.createdAt.toISOString(),
+            },
+            {
+              ...completedCol,
+              tickets: [],
+              createdAt: completedCol.createdAt.toISOString(),
+            },
           ],
         },
       },
@@ -121,10 +133,6 @@ describe("GET /boards/:boardId", () => {
     const response = await request(app).get(
       "/boards/" + board.id + "?include=tickets"
     );
-
-    const todoTicket = await client.ticket.findFirst({
-      where: { columnId: toDoColumn.id },
-    });
 
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
