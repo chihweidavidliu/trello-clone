@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "yarn docker:up && yarn migrate:test && dotenv -e .env.test -- jest -i --detectOpenHandles",
+    "test": "yarn docker:up && yarn migrate-deploy:test && dotenv -e .env.test -- jest -i --detectOpenHandles",
     "tsc": "tsc",
     "dev": "dotenv -e .env -- ts-node-dev ./src/index.ts",
     "build": "tsc",
@@ -12,8 +12,9 @@
     "check-types": "tsc --noEmit",
     "seed": "dotenv -e .env -- prisma db seed",
     "seed:test": "dotenv -e .env.test -- prisma db seed",
-    "migrate": "dotenv -e .env -- npx prisma migrate deploy",
-    "migrate:test": "dotenv -e .env.test -- npx prisma migrate deploy",
+    "migrate-dev": "dotenv -e .env -- npx prisma migrate dev",
+    "migrate-deploy": "dotenv -e .env -- npx prisma migrate deploy",
+    "migrate-deploy:test": "dotenv -e .env.test -- npx prisma migrate deploy",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
   },

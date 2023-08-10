@@ -61,4 +61,5 @@ model Column {
   index   Int
   tickets Ticket[]
   Board   Board    @relation(fields: [boardId], references: [id])
+  createdAt       DateTime        @default(now())
 }
