@@ -24,7 +24,11 @@ export class BoardsRepository {
         ? {
             include: includeOptions.tickets
               ? {
-                  tickets: true,
+                  tickets: {
+                    include: {
+                      assignedToUsers: true,
+                    },
+                  },
                 }
               : undefined,
           }
