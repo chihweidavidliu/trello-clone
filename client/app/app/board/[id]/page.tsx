@@ -6,10 +6,6 @@ async function getBoardData(id: string): Promise<Board> {
     `http://localhost:5000/boards/${id}?include=columns,tickets`
   );
 
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch board");
-  }
   const json: GetBoardByIdResponse = await res.json();
 
   if (!json.data.board || json.errors) {
