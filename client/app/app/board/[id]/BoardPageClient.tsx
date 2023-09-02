@@ -31,13 +31,16 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
       newColId,
       indexInNewCol,
     });
+    const ticket = ticketsById[ticketId];
 
     const updatedCols = columns.map((column) => {
-      const ticket = ticketsById[ticketId];
-
       const tickets = column?.tickets || [];
+
+      // if the ticket has moved within the same column
       if (ticket.columnId === newColId && column.id === ticket.columnId) {
         console.log("source col === target col", column);
+
+        // TODO: update
         // this is the source col
         return {
           ...column,
@@ -48,6 +51,8 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
             })
           ),
         };
+
+        // update the source column indices
       } else if (ticket.columnId === column.id) {
         console.log("source col", column);
         // this is the source col
@@ -57,6 +62,8 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
             .filter((t) => t.id !== ticket.id)
             .map((t, index) => ({ ...t, index })),
         };
+
+        // update the target col indices
       } else if (newColId === column.id) {
         console.log("target col", column);
         // this is the target col
