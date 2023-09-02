@@ -46,6 +46,11 @@ async function main() {
           description: "This is a description",
           createdByUserId: "test-user",
           index: 0,
+          assignedToUsers: {
+            create: {
+              userId: "test-user",
+            },
+          },
         },
       },
     },
