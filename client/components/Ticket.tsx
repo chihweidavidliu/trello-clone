@@ -1,5 +1,3 @@
-"use-client";
-
 import { Ticket } from "shared-utils";
 
 export interface TicketProps {
