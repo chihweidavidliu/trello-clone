@@ -1,17 +1,22 @@
-import { mockColumns } from "../../../mock-data";
+import { Board, GetBoardByIdResponse } from "shared-utils";
 import BoardPageClient from "./BoardPageClient";
 
-async function getBoardData(id: string) {
-  // const res = await fetch("https://api.example.com/...");
-  // // The return value is *not* serialized
-  // // You can return Date, Map, Set, etc.
-  // if (!res.ok) {
-  //   // This will activate the closest `error.js` Error Boundary
-  //   throw new Error("Failed to fetch data");
-  // }
-  // return res.json();
+async function getBoardData(id: string): Promise<Board> {
+  const res = await fetch(
+    `http://localhost:5000/boards/${id}?include=columns,tickets`
+  );
 
-  return Promise.resolve(mockColumns);
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch board");
+  }
+  const json: GetBoardByIdResponse = await res.json();
+
+  if (!json.data.board || json.errors) {
+    throw new Error(`Failed to fetch board: ${json.errors}`);
+  }
+
+  return json.data.board;
 }
 
 interface BoardPageProps {
@@ -21,8 +26,8 @@ interface BoardPageProps {
 export default async function BoardPage({ params }: BoardPageProps) {
   console.log("params", params);
 
-  const columns = await getBoardData(params.id);
+  const board = await getBoardData(params.id);
 
-  console.log("columns", columns);
-  return <BoardPageClient initialColumns={columns || []} />;
+  console.log("board", board);
+  return <BoardPageClient board={board} />;
 }

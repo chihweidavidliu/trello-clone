@@ -1,10 +1,10 @@
-export interface User {
+interface User {
   id: string;
   email: string;
   fullname: string;
 }
 
-export interface Ticket {
+interface Ticket {
   id: string;
   title: string;
   assignedTo?: User;

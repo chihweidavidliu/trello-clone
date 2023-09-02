@@ -1,22 +1,20 @@
 "use client";
-import { Column, Ticket } from "@/app/mock-data";
 import { useRef, useState } from "react";
 
 import { insertAtIndex } from "@/helpers/insertAtIndex";
 import { shiftInArray } from "@/helpers/shiftInArray";
 import ColumnComponent from "@/components/Column";
+import { Board, Column, Ticket } from "shared-utils";
 
 export interface BoardPageClientProps {
-  initialColumns: Column[];
+  board: Board;
 }
 
-export default function BoardPageClient({
-  initialColumns,
-}: BoardPageClientProps) {
-  const [columns, setColumns] = useState(initialColumns);
+export default function BoardPageClient({ board }: BoardPageClientProps) {
+  const [columns, setColumns] = useState<Column[]>(board?.columns || []);
 
   const ticketsById = columns.reduce((acc, col) => {
-    col.tickets.forEach((ticket) => {
+    col?.tickets?.forEach((ticket) => {
       acc[ticket.id] = ticket;
     });
 
@@ -37,26 +35,25 @@ export default function BoardPageClient({
     const updatedCols = columns.map((column) => {
       const ticket = ticketsById[ticketId];
 
+      const tickets = column?.tickets || [];
       if (ticket.columnId === newColId && column.id === ticket.columnId) {
         console.log("source col === target col", column);
         // this is the source col
         return {
           ...column,
-          tickets: shiftInArray(
-            column.tickets,
-            ticket.index,
-            indexInNewCol
-          ).map((t, index) => ({
-            ...t,
-            index,
-          })),
+          tickets: shiftInArray(tickets, ticket.index, indexInNewCol).map(
+            (t, index) => ({
+              ...t,
+              index,
+            })
+          ),
         };
       } else if (ticket.columnId === column.id) {
         console.log("source col", column);
         // this is the source col
         return {
           ...column,
-          tickets: column.tickets
+          tickets: tickets
             .filter((t) => t.id !== ticket.id)
             .map((t, index) => ({ ...t, index })),
         };
@@ -68,7 +65,7 @@ export default function BoardPageClient({
           ...column,
           tickets: insertAtIndex<Ticket>(
             { ...ticket, columnId: newColId },
-            column.tickets,
+            tickets,
             indexInNewCol
           ).map((t, index) => ({ ...t, index })),
         };

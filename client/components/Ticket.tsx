@@ -1,6 +1,6 @@
 "use-client";
 
-import { Ticket } from "@/app/mock-data";
+import { Ticket } from "shared-utils";
 
 export interface TicketProps {
   ticket: Ticket;
@@ -16,11 +16,14 @@ const TicketCard = ({ ticket, columnId }: TicketProps) => {
       id={ticket.id}
     >
       <h3 className="my-1 text-md select-none">{ticket.title}</h3>
-      {ticket.assignedTo && (
-        <p className="my-1 text-sm select-none">
-          Assigned to: {ticket.assignedTo.fullname}
-        </p>
-      )}
+      {ticket.assignedToUsers &&
+        ticket.assignedToUsers.map((assignation) => {
+          return (
+            <p key={assignation.id} className="my-1 text-sm select-none">
+              Assigned to: {assignation.userId}
+            </p>
+          );
+        })}
     </div>
   );
 };

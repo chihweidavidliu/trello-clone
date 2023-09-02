@@ -1,13 +1,7 @@
 "use-client";
 import TicketCard from "./Ticket";
 import Dropzone from "./Dropzone";
-import { Ticket } from "@/app/mock-data";
-
-export interface Column {
-  id: string;
-  title: string;
-  tickets: Ticket[];
-}
+import { Column } from "shared-utils";
 
 export interface ColumnProps {
   column: Column;
@@ -36,7 +30,7 @@ const ColumnComponent = ({
     >
       <h2 className="text-lg text-blue-950 font-semibold">{title}</h2>
       <div className="h-full" id={id + "-ticket-list"}>
-        {tickets.length > 0 ? (
+        {tickets && tickets.length > 0 ? (
           tickets
             .sort((a, b) => a.index - b.index)
             .map((ticket, index) => {
