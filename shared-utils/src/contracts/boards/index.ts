@@ -3,12 +3,19 @@ import { z } from "zod";
 export * from "./createBoard";
 export * from "./getBoardById";
 
+export const TicketAssignedToUserSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string(),
+  ticketId: z.string().uuid(),
+});
+
 export const TicketSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
   description: z.string(),
   columnId: z.string().uuid(),
   createdByUserId: z.string(),
+  assignedToUsers: z.array(TicketAssignedToUserSchema),
   index: z.number().int(),
   createdAt: z.date(),
   updatedAt: z.date(),
