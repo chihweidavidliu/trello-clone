@@ -3,6 +3,7 @@ import {
   ApiResponse,
   Board as BoardContract,
   CreateBoardSchema,
+  GetBoardByIdParamSchema,
 } from "shared-utils";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { validateRequest } from "../../middlewares/validate-request";
@@ -15,33 +16,40 @@ export interface BoardRouterProps {
 export const createBoardsRouter = ({ boardsController }: BoardRouterProps) => {
   const router = express.Router();
 
-  router.get("/boards/:id", async (req, res) => {
-    const id = req.params.id;
-    const includeRaw = req.query.include as string;
-    const include = includeRaw ? new Set(includeRaw.split(",")) : new Set();
+  router.get(
+    "/boards/:id",
+    validateRequest({ params: GetBoardByIdParamSchema }),
+    async (req, res) => {
+      const id = req.params.id;
+      const includeRaw = req.query.include as string;
+      const include = includeRaw ? new Set(includeRaw.split(",")) : new Set();
 
-    const board = await boardsController.getBoardById(id, {
-      include: {
-        columns: include.has("columns"),
-        tickets: include.has("columns") && include.has("tickets"),
-      },
-    });
-    if (!board) throw new BadRequestError(`Could not find board with id ${id}`);
+      const board = await boardsController.getBoardById(id, {
+        include: {
+          columns: include.has("columns"),
+          tickets: include.has("columns") && include.has("tickets"),
+        },
+      });
+      if (!board)
+        throw new BadRequestError(`Could not find board with id ${id}`);
 
-    const response: ApiResponse<{ board: BoardContract }> = {
-      errors: null,
-      data: {
-        board,
-      },
-    };
+      const response: ApiResponse<{ board: BoardContract }> = {
+        errors: null,
+        data: {
+          board,
+        },
+      };
 
-    res.status(200).send(response);
-  });
+      res.status(200).send(response);
+    }
+  );
 
   router.post(
     "/boards",
     validateRequest({ body: CreateBoardSchema }),
     async (req, res) => {
+      // TODO: add controller
+
       res.status(200).send({
         errors: null,
         data: {

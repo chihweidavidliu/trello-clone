@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export * from "./createBoard";
+export * from "./getBoardById";
 
 export const TicketSchema = z.object({
   id: z.string().uuid(),
