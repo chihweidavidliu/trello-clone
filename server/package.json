@@ -13,6 +13,7 @@
     "build-types": "dotenv -e .env -- ts-node-dev ./src/db/kanel.ts",
     "seed": "dotenv -e .env -- prisma db seed",
     "seed:test": "dotenv -e .env.test -- prisma db seed",
+    "create-migration": "yarn knex migrate:make --knexfile ./src/db/knexfile.ts",
     "migrate-dev": "dotenv -e .env -- npx prisma migrate dev",
     "migrate-deploy": "dotenv -e .env -- npx prisma migrate deploy",
     "migrate-deploy:test": "dotenv -e .env.test -- npx prisma migrate deploy",
