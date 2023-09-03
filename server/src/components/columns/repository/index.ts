@@ -1,7 +1,7 @@
 import { Knex } from "knex";
 import groupBy from "lodash/groupBy";
 
-import { Ticket, TicketInitializer } from "../../../db/generated-types";
+import { TicketInitializer } from "../../../db/generated-types";
 import { ColumnDTO, TicketDTO } from "shared-utils";
 
 export interface ColumnsRepositoryProps {
