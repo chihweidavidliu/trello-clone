@@ -15,12 +15,11 @@ afterAll(() => {
 });
 
 afterEach(async () => {
-  await knex("");
-
-  // await client.ticket.deleteMany();
-  // await client.column.deleteMany();
-  // await client.boardUserRole.deleteMany();
-  // await client.board.deleteMany();
+  await knex.table("TicketAssignedToUser").delete();
+  await knex.table("Ticket").delete();
+  await knex.table("Column").delete();
+  await knex.table("BoardUserRole").delete();
+  await knex.table("Board").delete();
 });
 
 describe("GET /boards/:boardId", () => {
@@ -88,9 +87,11 @@ describe("GET /boards/:boardId", () => {
       "/boards/" + board.id + "?include=columns,tickets"
     );
 
-    const todoTicket = await knex.ticket.findFirst({
-      where: { columnId: toDoColumn.id },
-    });
+    const todoTicket = await knex
+      .table("Ticket")
+      .select("*")
+      .where("columnId", toDoColumn.id)
+      .first();
 
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
