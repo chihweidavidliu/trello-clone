@@ -15,11 +15,11 @@ afterAll(() => {
 });
 
 afterEach(async () => {
-  await knex.table("TicketAssignedToUser").delete();
-  await knex.table("Ticket").delete();
-  await knex.table("Column").delete();
-  await knex.table("BoardUserRole").delete();
-  await knex.table("Board").delete();
+  await knex.table("ticket_assigned_to_user").delete();
+  await knex.table("ticket").delete();
+  await knex.table("board_column").delete();
+  await knex.table("board_user_role").delete();
+  await knex.table("board").delete();
 });
 
 describe("GET /boards/:boardId", () => {
@@ -30,7 +30,7 @@ describe("GET /boards/:boardId", () => {
     expect(response.body).toEqual({
       errors: [
         {
-          message: `Could not find board with id ${badUuid}`,
+          message: `Error reading board`,
         },
       ],
       data: null,
@@ -52,7 +52,9 @@ describe("GET /boards/:boardId", () => {
       data: {
         board: {
           ...board,
+          columns: [],
           createdAt: board.createdAt.toISOString(),
+          updatedAt: board.updatedAt.toISOString(),
         },
       },
     });
@@ -70,9 +72,12 @@ describe("GET /boards/:boardId", () => {
         board: {
           ...board,
           createdAt: board.createdAt.toISOString(),
+          updatedAt: board.updatedAt.toISOString(),
           columns: columns.map((col) => ({
             ...col,
+            tickets: [],
             createdAt: col.createdAt.toISOString(),
+            updatedAt: col.updatedAt.toISOString(),
           })),
         },
       },
@@ -90,7 +95,7 @@ describe("GET /boards/:boardId", () => {
     const completedCol = columns[2];
 
     const todoTicket = await knex
-      .table("Ticket")
+      .table("ticket")
       .select("*")
       .where("columnId", toDoColumn.id)
       .first();
@@ -102,10 +107,12 @@ describe("GET /boards/:boardId", () => {
         board: {
           ...board,
           createdAt: board.createdAt.toISOString(),
+          updatedAt: board.updatedAt.toISOString(),
           columns: [
             {
               ...toDoColumn,
               createdAt: toDoColumn.createdAt.toISOString(),
+              updatedAt: toDoColumn.updatedAt.toISOString(),
               tickets: [
                 {
                   ...todoTicket,
@@ -118,11 +125,13 @@ describe("GET /boards/:boardId", () => {
               ...inProgressCol,
               tickets: [],
               createdAt: inProgressCol.createdAt.toISOString(),
+              updatedAt: inProgressCol.updatedAt.toISOString(),
             },
             {
               ...completedCol,
               tickets: [],
               createdAt: completedCol.createdAt.toISOString(),
+              updatedAt: completedCol.updatedAt.toISOString(),
             },
           ],
         },
@@ -142,7 +151,9 @@ describe("GET /boards/:boardId", () => {
       data: {
         board: {
           ...board,
+          columns: [],
           createdAt: board.createdAt.toISOString(),
+          updatedAt: board.updatedAt.toISOString(),
         },
       },
     });

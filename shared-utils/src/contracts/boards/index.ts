@@ -12,7 +12,7 @@ export const TicketAssignedToUserSchema = z.object({
 export const TicketSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   columnId: z.string().uuid(),
   createdByUserId: z.string(),
   assignedToUsers: z.array(TicketAssignedToUserSchema),
@@ -28,8 +28,9 @@ export const ColumnSchema = z.object({
   title: z.string(),
   boardId: z.string().uuid(),
   index: z.number().int(),
-  tickets: z.array(TicketSchema).optional(),
+  tickets: z.array(TicketSchema),
   createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type ColumnDTO = z.infer<typeof ColumnSchema>;
@@ -39,7 +40,8 @@ export const BoardSchema = z.object({
   title: z.string(),
   createdByUserId: z.string(),
   createdAt: z.date(),
-  columns: z.array(ColumnSchema).optional(),
+  updatedAt: z.date(),
+  columns: z.array(ColumnSchema),
 });
 
 export type BoardDTO = z.infer<typeof BoardSchema>;

@@ -46,7 +46,7 @@ export class BoardsRepository {
     }
   ): Promise<BoardDTO | null> {
     const board = await this.dbContext
-      .table("Board")
+      .table("board")
       .select("*")
       .where("id", id)
       .first();
@@ -58,7 +58,7 @@ export class BoardsRepository {
     let columns: ColumnDTO[] = [];
     if (options?.include?.columns) {
       const rawColumnns = await this.dbContext
-        .table("Column")
+        .table("board_column")
         .select("*")
         .where("boardId", board.id);
 
@@ -68,7 +68,7 @@ export class BoardsRepository {
         const colIds = rawColumnns.map((col) => col.id);
 
         const rawTickets = await this.dbContext
-          .table("Ticket")
+          .table("ticket")
           .select("*")
           .whereIn("columnId", colIds);
 
@@ -76,7 +76,7 @@ export class BoardsRepository {
         const ticketIds = rawTickets.map((ticket) => ticket.id);
 
         const assignedToUsers = await this.dbContext
-          .table("TicketAssignedToUser")
+          .table("ticket_assigned_to_user")
           .select("*")
           .whereIn("ticketId", ticketIds);
 
@@ -92,7 +92,7 @@ export class BoardsRepository {
 
       columns = rawColumnns.map((rawCol) => ({
         ...rawCol,
-        tickets: ticketsByColId[rawCol.id],
+        tickets: ticketsByColId[rawCol.id] || [],
       }));
     }
 
