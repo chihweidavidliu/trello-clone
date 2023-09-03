@@ -1,18 +1,18 @@
 import { Knex } from "knex";
-import { dropOnUpdateTrigger, onUpdateTrigger } from "../migration-helpers";
+import { onUpdateTrigger } from "../migration-helpers";
 
 export async function up(knex: Knex): Promise<void> {
-  knex.schema
+  await knex.schema
     .createTable("board", (table) => {
       table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
       table.text("title").notNullable();
       table.text("createdByUserId").notNullable();
       table.timestamps(true, true, true);
     })
-    .createTable("column", (table) => {
+    .createTable("board_column", (table) => {
       table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
       table.text("title").notNullable();
-      table.uuid("boardId").notNullable().references("id").inTable("board");
+      table.uuid("boardId").references("id").inTable("board").notNullable();
       table.integer("index").notNullable();
       table.timestamps(true, true, true);
     })
@@ -20,7 +20,11 @@ export async function up(knex: Knex): Promise<void> {
       table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
       table.text("title").notNullable();
       table.text("description");
-      table.uuid("columnId").notNullable().references("id").inTable("column");
+      table
+        .uuid("columnId")
+        .notNullable()
+        .references("id")
+        .inTable("board_column");
       table.integer("index").notNullable();
       table.text("createdByUserId").notNullable();
       table.timestamps(true, true, true);
@@ -45,8 +49,8 @@ export async function up(knex: Knex): Promise<void> {
     });
 
   // add update triggers
-  await knex.raw(onUpdateTrigger("board"));
-  await knex.raw(onUpdateTrigger("column"));
+  await knex.schema.raw(onUpdateTrigger("board"));
+  await knex.raw(onUpdateTrigger("board_column"));
   await knex.raw(onUpdateTrigger("ticket"));
   await knex.raw(onUpdateTrigger("role"));
   await knex.raw(onUpdateTrigger("ticket_assigned_to_user"));
@@ -54,17 +58,11 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.raw(dropOnUpdateTrigger("board"));
-  await knex.raw(dropOnUpdateTrigger("column"));
-  await knex.raw(dropOnUpdateTrigger("ticket"));
-  await knex.raw(dropOnUpdateTrigger("role"));
-  await knex.raw(dropOnUpdateTrigger("ticket_assigned_to_user"));
-  await knex.raw(dropOnUpdateTrigger("board_user_role"));
-
-  knex.schema.dropTable("board_user_role");
-  knex.schema.dropTable("ticket_assigned_to_user");
-  knex.schema.dropTable("role");
-  knex.schema.dropTable("ticket");
-  knex.schema.dropTable("column");
-  knex.schema.dropTable("board");
+  await knex.schema
+    .dropTable("board_user_role")
+    .dropTable("ticket_assigned_to_user")
+    .dropTable("role")
+    .dropTable("ticket")
+    .dropTable("board_column")
+    .dropTable("board");
 }

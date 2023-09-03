@@ -16,7 +16,7 @@
     "knex-test": "dotenv -e .env.test -- knex",
     "migrate": "dotenv -e .env -- knex migrate:latest --knexfile ./src/db/knexfile.ts",
     "migrate-test": "dotenv -e .env.test -- knex migrate:latest --knexfile ./src/db/knexfile.ts",
-    "rollback-dev": "dotenv -e .env -- knex migrate:rollback --knexfile ./src/db/knexfile.ts",
+    "rollback": "dotenv -e .env -- knex migrate:rollback --knexfile ./src/db/knexfile.ts",
     "rollback-test": "dotenv -e .env.test -- knex migrate:rollback --knexfile ./src/db/knexfile.ts",
     "seed": "dotenv -e .env -- prisma db seed",
     "seed:test": "dotenv -e .env.test -- prisma db seed",

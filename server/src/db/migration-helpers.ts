@@ -5,9 +5,3 @@ export const onUpdateTrigger = (table: string) => {
     FOR EACH ROW
     EXECUTE PROCEDURE on_update_timestamp();`;
 };
-
-export const dropOnUpdateTrigger = (table: string) => {
-  return `
-        DROP TRIGGER ${table}_updated_at ON ${table}
-    `;
-};
