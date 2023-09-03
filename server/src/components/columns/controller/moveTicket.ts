@@ -1,10 +1,10 @@
-import { TicketDTO, insertAtIndex, shiftInArray } from "shared-utils";
+import { TicketDTO } from "shared-utils";
 import { TicketsControllerProps } from ".";
 import { BadRequestError } from "../../../errors/bad-request-error";
-import { BoardColumnId } from "../../../db/generated-types";
 
 export type MoveTicket = (
   ticketId: string,
+  oldColId: string,
   newColId: string,
   indexInCol: number
 ) => Promise<TicketDTO[]>;
@@ -12,81 +12,42 @@ export type MoveTicket = (
 export const createMoveTicket = ({
   columnsRepository,
 }: TicketsControllerProps): MoveTicket => {
-  return async (ticketId, newColId, indexInCol) => {
-    // TODO: check user has permission to edit the board
+  return async (ticketId, oldColId, newColId, indexInCol) => {
+    // TODO: check user has permission to edit the board (method on the column entity)
 
-    const ticket = await columnsRepository.getTicketById(ticketId);
-
-    if (!ticket) {
-      throw new BadRequestError("Ticket not found");
-    }
-
-    const colsToLoad: string[] = [ticket.columnId];
-    if (newColId !== ticket.columnId) {
+    const colsToLoad: string[] = [oldColId];
+    if (newColId !== oldColId) {
       colsToLoad.push(newColId);
     }
 
     const cols = await columnsRepository.getColumnsById(colsToLoad);
 
     // moving ticket within same column
-    if (cols.length === 0) {
-      const updatedTickets = shiftInArray(
-        cols[0].tickets,
-        ticket.index,
-        indexInCol
-      ).map((t, index) => ({ ...t, index }));
-
-      const updatedTicketInserts = updatedTickets.map(
-        ({ id, assignedToUsers, ...ticket }) => ({
-          ...ticket,
-          columnId: ticket.columnId as BoardColumnId,
-        })
-      );
-
-      const results = await columnsRepository.updateTicketsOrder(
-        updatedTicketInserts
-      );
-
-      return results;
+    if (cols.length === 1) {
+      const column = cols[0];
+      column.reorderTicket(ticketId, indexInCol);
+      await columnsRepository.save(column);
+      return column.tickets;
     } else {
       const sourceCol = cols[0];
       const targetCol = cols[0];
 
-      // update target col ticket indices
-      const updatedTargetColTickets = insertAtIndex<TicketDTO>(
-        { ...ticket, columnId: newColId },
-        targetCol.tickets,
-        indexInCol
-      ).map((t, index) => ({ ...t, index }));
+      const removedTicket = sourceCol.removeTicket(ticketId);
 
-      const updatedTargetColTicketInserts = updatedTargetColTickets.map(
-        ({ id, assignedToUsers, ...ticket }) => ({
-          ...ticket,
-          columnId: newColId as BoardColumnId,
-        })
-      );
+      if (!removedTicket) {
+        throw new BadRequestError(
+          `Failed to remove ticket ${ticketId} from column ${sourceCol.id}`
+        );
+      }
 
-      await columnsRepository.updateTicketsOrder(updatedTargetColTicketInserts);
+      targetCol.addTicket(removedTicket, indexInCol);
 
-      // update source col ticket indices
+      await columnsRepository.save([sourceCol, targetCol]);
 
-      const updatedSourceColTickets = sourceCol.tickets
-        .filter((t) => t.id !== ticket.id)
-        .map((t, index) => ({ ...t, index }));
-
-      const updatedSoureColTicketInserts = updatedSourceColTickets.map(
-        ({ id, assignedToUsers, ...ticket }) => ({
-          ...ticket,
-          columnId: ticket.columnId as BoardColumnId,
-        })
-      );
-
-      const results = await columnsRepository.updateTicketsOrder([
-        ...updatedTargetColTicketInserts,
-        ...updatedSoureColTicketInserts,
-      ]);
-
-      return results;
+      return [sourceCol, targetCol].reduce((acc, c) => {
+        acc = { ...acc, ...c.tickets };
+        return acc;
+      }, [] as TicketDTO[]);
     }
   };
 };
