@@ -1,4 +1,5 @@
 import { Knex } from "knex";
+import { Ticket, TicketInitializer } from "../../../db/generated-types";
 
 export interface ColumnsRepositoryProps {
   dbContext: Knex;
@@ -13,5 +14,14 @@ export class ColumnsRepository {
     this.dbContext = dbContext;
   }
 
-  async updateTicketsOrder() {}
+  async updateTicketsOrder(tickets: TicketInitializer[]): Promise<Ticket[]> {
+    const updatedRows = await this.dbContext
+      .table("ticket")
+      .insert(tickets)
+      .onConflict("id")
+      .merge()
+      .returning("*");
+
+    return updatedRows;
+  }
 }
