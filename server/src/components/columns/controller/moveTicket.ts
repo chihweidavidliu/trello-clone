@@ -33,13 +33,6 @@ export const createMoveTicket = ({
       const targetCol = cols[0];
 
       const removedTicket = sourceCol.removeTicket(ticketId);
-
-      if (!removedTicket) {
-        throw new BadRequestError(
-          `Failed to remove ticket ${ticketId} from column ${sourceCol.id}`
-        );
-      }
-
       targetCol.addTicket(removedTicket, indexInCol);
 
       await columnsRepository.save([sourceCol, targetCol]);

@@ -4,7 +4,6 @@ import {
   insertAtIndex,
   shiftInArray,
 } from "shared-utils";
-import omit from "lodash/omit";
 import { Entity } from "../../types/entity";
 import {
   BoardColumn,
@@ -13,6 +12,7 @@ import {
   Ticket,
   TicketId,
 } from "../../db/generated-types";
+import { BadRequestError } from "../../errors/bad-request-error";
 
 export class ColumnEntity extends Entity<ColumnDTO> {
   private constructor(props: ColumnDTO) {
@@ -50,9 +50,13 @@ export class ColumnEntity extends Entity<ColumnDTO> {
     return this.props.tickets;
   }
 
-  removeTicket(ticketId: string): TicketDTO | null {
+  removeTicket(ticketId: string): TicketDTO {
     const ticket = this.tickets.find((ticket) => ticket.id === ticketId);
-    if (!ticket) return null;
+    if (!ticket) {
+      throw new BadRequestError(
+        `Failed to remove ticket ${ticketId} from column ${this.id}`
+      );
+    }
 
     const updatedTickets = this.tickets
       .filter((t) => t.id !== ticket.id)
@@ -74,7 +78,11 @@ export class ColumnEntity extends Entity<ColumnDTO> {
 
   reorderTicket(ticketId: string, newIndex: number) {
     const ticket = this.tickets.find((ticket) => ticket.id === ticketId);
-    if (!ticket) return;
+    if (!ticket) {
+      throw new BadRequestError(
+        `Ticket ${ticketId} not found in column ${this.id}`
+      );
+    }
 
     const updatedTickets = shiftInArray(
       this.tickets,
