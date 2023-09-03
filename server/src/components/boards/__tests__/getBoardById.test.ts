@@ -59,8 +59,7 @@ describe("GET /boards/:boardId", () => {
   });
 
   it("should include columns if 'include' query param is specified with 'columns'", async () => {
-    const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard(knex, "test-user-woo");
+    const { board, columns } = await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=columns"
     );
@@ -71,7 +70,7 @@ describe("GET /boards/:boardId", () => {
         board: {
           ...board,
           createdAt: board.createdAt.toISOString(),
-          columns: [toDoColumn, inProgressCol, completedCol].map((col) => ({
+          columns: columns.map((col) => ({
             ...col,
             createdAt: col.createdAt.toISOString(),
           })),
@@ -81,11 +80,14 @@ describe("GET /boards/:boardId", () => {
   });
 
   it("should include tickets if 'include' query param is specified with 'columns' and 'tickets'", async () => {
-    const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard(knex, "test-user-woo");
+    const { board, columns } = await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=columns,tickets"
     );
+
+    const toDoColumn = columns[0];
+    const inProgressCol = columns[1];
+    const completedCol = columns[2];
 
     const todoTicket = await knex
       .table("Ticket")
@@ -128,8 +130,8 @@ describe("GET /boards/:boardId", () => {
     });
   });
 
-  it("should NOT include tickets if 'include' query param is specified with 'tickets' onlu", async () => {
-    const { board, toDoColumn } = await createTestBoard(knex, "test-user-woo");
+  it("should NOT include tickets if 'include' query param is specified with 'tickets' only", async () => {
+    const { board } = await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=tickets"
     );
