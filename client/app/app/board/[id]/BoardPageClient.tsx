@@ -4,14 +4,14 @@ import { useRef, useState } from "react";
 import { insertAtIndex } from "@/helpers/insertAtIndex";
 import { shiftInArray } from "@/helpers/shiftInArray";
 import ColumnComponent from "@/components/Column";
-import { Board, Column, Ticket } from "shared-utils";
+import { BoardDTO, ColumnDTO, TicketDTO } from "shared-utils";
 
 export interface BoardPageClientProps {
-  board: Board;
+  board: BoardDTO;
 }
 
 export default function BoardPageClient({ board }: BoardPageClientProps) {
-  const [columns, setColumns] = useState<Column[]>(board?.columns || []);
+  const [columns, setColumns] = useState<ColumnDTO[]>(board?.columns || []);
 
   const ticketsById = columns.reduce((acc, col) => {
     col?.tickets?.forEach((ticket) => {
@@ -19,7 +19,7 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
     });
 
     return acc;
-  }, {} as Record<string, Ticket>);
+  }, {} as Record<string, TicketDTO>);
 
   const handleTicketDrop = async (
     ticketId: string,
@@ -70,7 +70,7 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
 
         return {
           ...column,
-          tickets: insertAtIndex<Ticket>(
+          tickets: insertAtIndex<TicketDTO>(
             { ...ticket, columnId: newColId },
             tickets,
             indexInNewCol

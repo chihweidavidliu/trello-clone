@@ -1,10 +1,10 @@
 "use-client";
 import TicketCard from "./Ticket";
 import Dropzone from "./Dropzone";
-import { Column } from "shared-utils";
+import { ColumnDTO } from "shared-utils";
 
 export interface ColumnProps {
-  column: Column;
+  column: ColumnDTO;
   handleTicketDrop: (
     draggedTicketId: string,
     orderInNewColumn: number

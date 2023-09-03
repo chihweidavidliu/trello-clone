@@ -1,7 +1,7 @@
-import { Board, GetBoardByIdResponse } from "shared-utils";
+import { BoardDTO, GetBoardByIdResponse } from "shared-utils";
 import BoardPageClient from "./BoardPageClient";
 
-async function getBoardData(id: string): Promise<Board> {
+async function getBoardData(id: string): Promise<BoardDTO> {
   const res = await fetch(
     `http://localhost:5000/boards/${id}?include=columns,tickets`
   );

@@ -1,7 +1,7 @@
-import { Ticket } from "shared-utils";
+import { TicketDTO } from "shared-utils";
 
 export interface TicketProps {
-  ticket: Ticket;
+  ticket: TicketDTO;
   columnId: string;
 }
 
