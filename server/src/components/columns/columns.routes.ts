@@ -1,8 +1,5 @@
 import express from "express";
 import {
-  ApiResponse,
-  CreateBoardSchema,
-  GetBoardByIdParamSchema,
   MoveTicketBodySchema,
   MoveTicketParamSchema,
   MoveTicketPayload,

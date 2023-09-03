@@ -1,8 +1,6 @@
 "use client";
-import { useRef, useState } from "react";
-
-import { insertAtIndex } from "@/helpers/insertAtIndex";
-import { shiftInArray } from "@/helpers/shiftInArray";
+import { useState } from "react";
+import { shiftInArray, insertAtIndex } from "shared-utils";
 import ColumnComponent from "@/components/Column";
 import { BoardDTO, ColumnDTO, TicketDTO } from "shared-utils";
 
