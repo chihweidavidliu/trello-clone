@@ -1,13 +1,10 @@
 import { Knex } from "knex";
-import { v4 as uuid } from "uuid";
-import { BoardId, ColumnId, TicketId } from "../../db/generated-types";
 
 export const createTestBoard = async (client: Knex, userId: string) => {
   const board = await client
     .table("Board")
     .insert([
       {
-        id: uuid() as BoardId,
         title: "Test board",
         createdByUserId: userId,
       },
@@ -23,19 +20,16 @@ export const createTestBoard = async (client: Knex, userId: string) => {
     .table("Column")
     .insert([
       {
-        id: uuid() as ColumnId,
         title: "To do",
         boardId: board.id,
         index: 0,
       },
       {
-        id: uuid() as ColumnId,
         title: "In progress",
         boardId: board.id,
         index: 1,
       },
       {
-        id: uuid() as ColumnId,
         title: "Completed",
         boardId: board.id,
         index: 2,
@@ -49,7 +43,6 @@ export const createTestBoard = async (client: Knex, userId: string) => {
 
   await client.table("Ticket").insert([
     {
-      id: uuid() as TicketId,
       columnId: columns[0].id,
       title: "Add tests",
       description: "This is a description",

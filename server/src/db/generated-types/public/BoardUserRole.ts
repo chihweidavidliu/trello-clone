@@ -4,10 +4,10 @@
 import type { BoardId } from './Board';
 import type { RoleId } from './Role';
 
-/** Identifier type for public.BoardUserRole */
+/** Identifier type for public.board_user_role */
 export type BoardUserRoleId = string & { __brand: 'BoardUserRoleId' };
 
-/** Represents the table public.BoardUserRole */
+/** Represents the table public.board_user_role */
 export default interface BoardUserRole {
   id: BoardUserRoleId;
 
@@ -16,20 +16,31 @@ export default interface BoardUserRole {
   boardId: BoardId;
 
   roleId: RoleId;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
-/** Represents the initializer for the table public.BoardUserRole */
+/** Represents the initializer for the table public.board_user_role */
 export interface BoardUserRoleInitializer {
-  id: BoardUserRoleId;
+  /** Default value: uuid_generate_v4() */
+  id?: BoardUserRoleId;
 
   userId: string;
 
   boardId: BoardId;
 
   roleId: RoleId;
+
+  /** Default value: CURRENT_TIMESTAMP */
+  createdAt?: Date;
+
+  /** Default value: CURRENT_TIMESTAMP */
+  updatedAt?: Date;
 }
 
-/** Represents the mutator for the table public.BoardUserRole */
+/** Represents the mutator for the table public.board_user_role */
 export interface BoardUserRoleMutator {
   id?: BoardUserRoleId;
 
@@ -38,4 +49,8 @@ export interface BoardUserRoleMutator {
   boardId?: BoardId;
 
   roleId?: RoleId;
+
+  createdAt?: Date;
+
+  updatedAt?: Date;
 }

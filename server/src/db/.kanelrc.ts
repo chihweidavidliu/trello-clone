@@ -1,13 +1,21 @@
 import { Config, generateIndexFile } from "kanel";
-const { generateKnexTablesModule, knexTypeFilter } = require("kanel-knex");
+const {
+  generateKnexTablesModule,
+  knexTypeFilter,
+  generateMigrationCheck,
+} = require("kanel-knex");
 import { config } from "../config";
 
 /** @type {import('kanel').Config} */
 const kanelConfig: Config = {
-  connection: config().databaseUrl,
+  connection: config().databaseUrl || "",
   preDeleteOutputFolder: true,
   outputPath: "./src/db/generated-types",
-  preRenderHooks: [generateIndexFile, generateKnexTablesModule],
+  preRenderHooks: [
+    generateMigrationCheck,
+    generateIndexFile,
+    generateKnexTablesModule,
+  ],
   typeFilter: knexTypeFilter,
 
   customTypeMap: {
