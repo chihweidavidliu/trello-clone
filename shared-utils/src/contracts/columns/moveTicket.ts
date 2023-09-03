@@ -5,6 +5,7 @@ export const MoveTicketParamSchema = z.object({
 });
 
 export const MoveTicketBodySchema = z.object({
+  sourceColId: z.string().uuid(),
   newColId: z.string().uuid(),
   newIndex: z.number().int(),
 });

@@ -1,10 +1,9 @@
 import { TicketDTO } from "shared-utils";
 import { TicketsControllerProps } from ".";
-import { BadRequestError } from "../../../errors/bad-request-error";
 
 export type MoveTicket = (
   ticketId: string,
-  oldColId: string,
+  sourceColId: string,
   newColId: string,
   indexInCol: number
 ) => Promise<TicketDTO[]>;
@@ -12,11 +11,11 @@ export type MoveTicket = (
 export const createMoveTicket = ({
   columnsRepository,
 }: TicketsControllerProps): MoveTicket => {
-  return async (ticketId, oldColId, newColId, indexInCol) => {
+  return async (ticketId, sourceColId, newColId, indexInCol) => {
     // TODO: check user has permission to edit the board (method on the column entity)
 
-    const colsToLoad: string[] = [oldColId];
-    if (newColId !== oldColId) {
+    const colsToLoad: string[] = [sourceColId];
+    if (newColId !== sourceColId) {
       colsToLoad.push(newColId);
     }
 

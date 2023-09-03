@@ -4,7 +4,6 @@ import {
   MoveTicketParamSchema,
   MoveTicketPayload,
 } from "shared-utils";
-import { BadRequestError } from "../../errors/bad-request-error";
 import { validateRequest } from "../../middlewares/validate-request";
 import { ColumnsController } from "./controller";
 
@@ -29,6 +28,7 @@ export const createBoardsRouter = ({
 
       await ticketsController.moveTicket(
         ticketId,
+        body.sourceColId,
         body.newColId,
         body.newIndex
       );
