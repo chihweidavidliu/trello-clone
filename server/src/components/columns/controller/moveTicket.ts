@@ -13,6 +13,8 @@ export const createMoveTicket = ({
   columnsRepository,
 }: TicketsControllerProps): MoveTicket => {
   return async (ticketId, newColId, indexInCol) => {
+    // TODO: check user has permission to edit the board
+
     const ticket = await columnsRepository.getTicketById(ticketId);
 
     if (!ticket) {
