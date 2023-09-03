@@ -1,13 +1,13 @@
 import { TicketDTO, insertAtIndex, shiftInArray } from "shared-utils";
 import { TicketsControllerProps } from ".";
 import { BadRequestError } from "../../../errors/bad-request-error";
-import { BoardColumnId, Ticket } from "../../../db/generated-types";
+import { BoardColumnId } from "../../../db/generated-types";
 
 export type MoveTicket = (
   ticketId: string,
   newColId: string,
   indexInCol: number
-) => Promise<Ticket[]>; // TODO: return TicketDTO instead
+) => Promise<TicketDTO[]>;
 
 export const createMoveTicket = ({
   columnsRepository,

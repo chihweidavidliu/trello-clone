@@ -77,7 +77,7 @@ export class ColumnsRepository {
     return columns;
   }
 
-  async updateTicketsOrder(tickets: TicketInitializer[]): Promise<Ticket[]> {
+  async updateTicketsOrder(tickets: TicketInitializer[]): Promise<TicketDTO[]> {
     const updatedRows = await this.dbContext
       .table("ticket")
       .insert(tickets)
@@ -85,6 +85,19 @@ export class ColumnsRepository {
       .merge()
       .returning("*");
 
-    return updatedRows;
+    const assignedToUsers = await this.dbContext
+      .table("ticket_assigned_to_user")
+      .select("*")
+      .where(
+        "ticketId",
+        updatedRows.map((row) => row.id)
+      );
+
+    const assignedToUsersByTicketId = groupBy(assignedToUsers, "ticketId");
+
+    return updatedRows.map((rawTicket) => ({
+      ...rawTicket,
+      assignedToUsers: assignedToUsersByTicketId[rawTicket.id],
+    }));
   }
 }
