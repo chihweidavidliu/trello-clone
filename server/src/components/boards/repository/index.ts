@@ -1,4 +1,7 @@
-import { Board, PrismaClient } from "@prisma/client";
+import { Knex } from "knex";
+import groupBy from "lodash/groupBy";
+import { BadRequestError } from "../../../errors/bad-request-error";
+import { BoardDTO, ColumnDTO, TicketDTO } from "shared-utils";
 
 export interface BoardIncludeOptions {
   columns: boolean;
@@ -6,13 +9,13 @@ export interface BoardIncludeOptions {
 }
 
 export interface BoardsRepositoryProps {
-  dbContext: PrismaClient;
+  dbContext: Knex;
 }
 
 export interface BoardsRepository {}
 
 export class BoardsRepository {
-  private dbContext: PrismaClient;
+  private dbContext: Knex;
 
   constructor({ dbContext }: BoardsRepositoryProps) {
     this.dbContext = dbContext;
@@ -41,14 +44,58 @@ export class BoardsRepository {
     options?: {
       include?: BoardIncludeOptions;
     }
-  ): Promise<Board | null> {
-    const board = await this.dbContext.board.findUnique({
-      where: {
-        id,
-      },
-      include: this.parseIncludeOptions(options?.include),
-    });
+  ): Promise<BoardDTO | null> {
+    const board = await this.dbContext
+      .table("Board")
+      .select("*")
+      .where("id", id)
+      .first();
 
-    return board;
+    if (!board) {
+      throw new BadRequestError("Error reading board");
+    }
+
+    let columns: ColumnDTO[] = [];
+    if (options?.include?.columns) {
+      const rawColumnns = await this.dbContext
+        .table("Column")
+        .select("*")
+        .where("boardId", board.id);
+
+      let tickets: TicketDTO[] = [];
+
+      if (options?.include?.tickets) {
+        const colIds = rawColumnns.map((col) => col.id);
+
+        const rawTickets = await this.dbContext
+          .table("Ticket")
+          .select("*")
+          .whereIn("columnId", colIds);
+
+        console.log("rawTickets", rawTickets);
+        const ticketIds = rawTickets.map((ticket) => ticket.id);
+
+        const assignedToUsers = await this.dbContext
+          .table("TicketAssignedToUser")
+          .select("*")
+          .whereIn("ticketId", ticketIds);
+
+        const assignedToUsersByTicketId = groupBy(assignedToUsers, "ticketId");
+
+        tickets = rawTickets.map((rawTicket) => ({
+          ...rawTicket,
+          assignedToUsers: assignedToUsersByTicketId[rawTicket.id],
+        }));
+      }
+
+      const ticketsByColId = groupBy(tickets, "columnId");
+
+      columns = rawColumnns.map((rawCol) => ({
+        ...rawCol,
+        tickets: ticketsByColId[rawCol.id],
+      }));
+    }
+
+    return { ...board, columns };
   }
 }

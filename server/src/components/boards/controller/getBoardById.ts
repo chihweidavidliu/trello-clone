@@ -1,11 +1,11 @@
-import { Board } from "@prisma/client";
+import { BoardDTO } from "shared-utils";
 import { BoardsControllerProps } from ".";
 import { BoardIncludeOptions } from "../repository";
 
 export type GetBoardById = (
   id: string,
   options?: { include?: BoardIncludeOptions }
-) => Promise<Board | null>;
+) => Promise<BoardDTO | null>;
 
 export const createGetBoardsById =
   ({ boardsRepository }: BoardsControllerProps): GetBoardById =>

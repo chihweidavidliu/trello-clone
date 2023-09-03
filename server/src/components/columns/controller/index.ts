@@ -1,17 +1,17 @@
-import { TicketsRepository } from "../repository";
+import { ColumnsRepository } from "../repository";
 import { MoveTicket, createMoveTicket } from "./moveTicket";
 
 export interface TicketsControllerProps {
-  ticketsRepository: TicketsRepository;
+  columnsRepository: ColumnsRepository;
 }
 
-export interface TicketsController {
+export interface ColumnsController {
   moveTicket: MoveTicket;
 }
 
-export const createTicketsController = (
+export const createColumnsController = (
   props: TicketsControllerProps
-): TicketsController => {
+): ColumnsController => {
   return {
     moveTicket: createMoveTicket(props),
   };

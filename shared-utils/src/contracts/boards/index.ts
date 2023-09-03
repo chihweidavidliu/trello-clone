@@ -21,7 +21,7 @@ export const TicketSchema = z.object({
   updatedAt: z.date(),
 });
 
-export type Ticket = z.infer<typeof TicketSchema>;
+export type TicketDTO = z.infer<typeof TicketSchema>;
 
 export const ColumnSchema = z.object({
   id: z.string().uuid(),
@@ -32,7 +32,7 @@ export const ColumnSchema = z.object({
   createdAt: z.date(),
 });
 
-export type Column = z.infer<typeof ColumnSchema>;
+export type ColumnDTO = z.infer<typeof ColumnSchema>;
 
 export const BoardSchema = z.object({
   id: z.string().uuid(),
@@ -42,4 +42,4 @@ export const BoardSchema = z.object({
   columns: z.array(ColumnSchema).optional(),
 });
 
-export type Board = z.infer<typeof BoardSchema>;
+export type BoardDTO = z.infer<typeof BoardSchema>;

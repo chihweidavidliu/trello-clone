@@ -1,24 +1,26 @@
 import request from "supertest";
 import { v4 as uuid } from "uuid";
-import { PrismaClient } from "@prisma/client";
 import { createApp } from "../../../createApp";
 import { config } from "../../../config";
 import { createTestBoard } from "../../../utils/test-utils/createTestBoard";
+import { knex } from "../../../db/knex";
 
 const { port, databaseUrl } = config();
 console.log("databaseUrl", databaseUrl);
-const client = new PrismaClient();
-const { app, server } = createApp({ port, dbContext: client });
+
+const { app, server } = createApp({ port, dbContext: knex });
 
 afterAll(() => {
   server.close();
 });
 
 afterEach(async () => {
-  await client.ticket.deleteMany();
-  await client.column.deleteMany();
-  await client.boardUserRole.deleteMany();
-  await client.board.deleteMany();
+  await knex("");
+
+  // await client.ticket.deleteMany();
+  // await client.column.deleteMany();
+  // await client.boardUserRole.deleteMany();
+  // await client.board.deleteMany();
 });
 
 describe("GET /boards/:boardId", () => {
@@ -43,7 +45,7 @@ describe("GET /boards/:boardId", () => {
   );
 
   it("should return 200 and board if user has view permissions on the board", async () => {
-    const { board } = await createTestBoard(client, "test-user-woo");
+    const { board } = await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get("/boards/" + board.id);
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
@@ -59,7 +61,7 @@ describe("GET /boards/:boardId", () => {
 
   it("should include columns if 'include' query param is specified with 'columns'", async () => {
     const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard(client, "test-user-woo");
+      await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=columns"
     );
@@ -81,12 +83,12 @@ describe("GET /boards/:boardId", () => {
 
   it("should include tickets if 'include' query param is specified with 'columns' and 'tickets'", async () => {
     const { board, toDoColumn, inProgressCol, completedCol } =
-      await createTestBoard(client, "test-user-woo");
+      await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=columns,tickets"
     );
 
-    const todoTicket = await client.ticket.findFirst({
+    const todoTicket = await knex.ticket.findFirst({
       where: { columnId: toDoColumn.id },
     });
 
@@ -126,10 +128,7 @@ describe("GET /boards/:boardId", () => {
   });
 
   it("should NOT include tickets if 'include' query param is specified with 'tickets' onlu", async () => {
-    const { board, toDoColumn } = await createTestBoard(
-      client,
-      "test-user-woo"
-    );
+    const { board, toDoColumn } = await createTestBoard(knex, "test-user-woo");
     const response = await request(app).get(
       "/boards/" + board.id + "?include=tickets"
     );

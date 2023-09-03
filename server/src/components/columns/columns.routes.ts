@@ -1,7 +1,6 @@
 import express from "express";
 import {
   ApiResponse,
-  Board as BoardContract,
   CreateBoardSchema,
   GetBoardByIdParamSchema,
   MoveTicketBodySchema,
@@ -10,10 +9,10 @@ import {
 } from "shared-utils";
 import { BadRequestError } from "../../errors/bad-request-error";
 import { validateRequest } from "../../middlewares/validate-request";
-import { TicketsController } from "./controller";
+import { ColumnsController } from "./controller";
 
 export interface TicketsRouterProps {
-  ticketsController: TicketsController;
+  ticketsController: ColumnsController;
 }
 
 export const createBoardsRouter = ({

@@ -1,7 +1,7 @@
 import express from "express";
 import {
   ApiResponse,
-  Board as BoardContract,
+  BoardDTO,
   CreateBoardSchema,
   GetBoardByIdParamSchema,
 } from "shared-utils";
@@ -33,7 +33,7 @@ export const createBoardsRouter = ({ boardsController }: BoardRouterProps) => {
       if (!board)
         throw new BadRequestError(`Could not find board with id ${id}`);
 
-      const response: ApiResponse<{ board: BoardContract }> = {
+      const response: ApiResponse<{ board: BoardDTO }> = {
         errors: null,
         data: {
           board,

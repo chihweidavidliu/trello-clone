@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { ApiResponse } from "../response";
-import { Board } from ".";
+import { BoardDTO } from ".";
 
 export const GetBoardByIdParamSchema = z.object({
   id: z.string().uuid(),
 });
 
-export type GetBoardByIdResponse = ApiResponse<{ board: Board | null }>;
+export type GetBoardByIdResponse = ApiResponse<{ board: BoardDTO | null }>;

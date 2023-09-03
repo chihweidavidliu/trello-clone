@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import express from "express";
 require("express-async-errors");
 import { createBoardsRouter } from "./components/boards/boards.routes";
@@ -6,10 +5,11 @@ import { createBoardsController } from "./components/boards/controller";
 import { BoardsRepository } from "./components/boards/repository";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
+import { Knex } from "knex";
 
 export interface AppProps {
   port: number;
-  dbContext: PrismaClient;
+  dbContext: Knex;
 }
 
 export const createApp = ({ port, dbContext }: AppProps) => {

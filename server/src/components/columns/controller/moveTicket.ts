@@ -1,4 +1,4 @@
-import { Ticket } from "shared-utils";
+import { TicketDTO } from "shared-utils";
 import { TicketsControllerProps } from ".";
 
 export type MoveTicket = (
@@ -8,7 +8,7 @@ export type MoveTicket = (
 ) => Promise<void>;
 
 export const createMoveTicket = ({
-  ticketsRepository,
+  columnsRepository,
 }: TicketsControllerProps): MoveTicket => {
   return async (id, newColId, indexInCol) => {
     // TODO: FILL THIS OUT
