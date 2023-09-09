@@ -4,12 +4,12 @@ const isEntity = (v: any): v is Entity<any> => {
   return v instanceof Entity;
 };
 
-export abstract class Entity<T> {
+export abstract class Entity<T extends { id: string }> {
   protected readonly _id: UniqueEntityID;
   public readonly props: T;
 
-  constructor(props: T, id?: UniqueEntityID) {
-    this._id = id ? id : new UniqueEntityID();
+  constructor(props: T) {
+    this._id = props.id ? new UniqueEntityID(props.id) : new UniqueEntityID();
     this.props = props;
   }
 
