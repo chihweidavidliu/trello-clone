@@ -2,9 +2,10 @@ import { Knex } from "knex";
 import groupBy from "lodash/groupBy";
 
 import { Ticket } from "../../../db/generated-types";
-import { ColumnDTO, TicketDTO } from "shared-utils";
-import { ColumnEntity } from "../column.entity";
+import { TicketDTO } from "shared-utils";
+import { ColumnAggregate } from "../domain/column.aggregate";
 import { InternalServerError } from "../../../errors/internal-server-error";
+import { columnMapper } from "../domain/column.mapper";
 
 export interface ColumnsRepositoryProps {
   dbContext: Knex;
@@ -19,16 +20,15 @@ export class ColumnsRepository {
     this.dbContext = dbContext;
   }
 
-  async getColumnsById(ids: string[]): Promise<ColumnEntity[]> {
-    const rawColumnns = await this.dbContext
+  async getColumnsById(ids: string[]): Promise<ColumnAggregate[]> {
+    const rawCols = await this.dbContext
       .table("board_column")
       .select("*")
       .whereIn("id", ids);
 
-    let columns: ColumnDTO[] = [];
     let tickets: TicketDTO[] = [];
 
-    const colIds = rawColumnns.map((col) => col.id);
+    const colIds = rawCols.map((col) => col.id);
 
     const rawTickets = await this.dbContext
       .table("ticket")
@@ -51,21 +51,20 @@ export class ColumnsRepository {
 
     const ticketsByColId = groupBy(tickets, "columnId");
 
-    columns = rawColumnns.map((rawCol) => ({
-      ...rawCol,
-      tickets: ticketsByColId[rawCol.id] || [],
-    }));
-
-    return columns.map((c) => ColumnEntity.create(c));
+    return rawCols.map((rawCol) =>
+      columnMapper.toDomain(rawCol, ticketsByColId[rawCol.id])
+    );
   }
 
-  async save(col: ColumnEntity[] | ColumnEntity): Promise<ColumnEntity[]> {
+  async save(
+    col: ColumnAggregate[] | ColumnAggregate
+  ): Promise<ColumnAggregate[]> {
     try {
       const columns = Array.isArray(col) ? col : [col];
       await this.dbContext.transaction(async (trx) => {
         await trx
           .table("board_column")
-          .insert(columns.map((col) => col.toPrimitive()))
+          .insert(columns.map((col) => columnMapper.toPersistence(col)))
           .onConflict("id")
           .merge()
           .returning("*");

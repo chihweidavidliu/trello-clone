@@ -4,32 +4,17 @@ import {
   insertAtIndex,
   shiftInArray,
 } from "shared-utils";
-import { Entity } from "../../types/entity";
-import {
-  BoardColumn,
-  BoardColumnId,
-  BoardId,
-  Ticket,
-  TicketId,
-} from "../../db/generated-types";
-import { BadRequestError } from "../../errors/bad-request-error";
+import { BoardColumnId, Ticket, TicketId } from "../../../db/generated-types";
+import { BadRequestError } from "../../../errors/bad-request-error";
+import { AggregateRoot } from "../../../types/domain/AggregateRoot";
 
-export class ColumnEntity extends Entity<ColumnDTO> {
+export class ColumnAggregate extends AggregateRoot<ColumnDTO> {
   private constructor(props: ColumnDTO) {
     super(props);
   }
 
   public static create(props: ColumnDTO) {
-    return new ColumnEntity(props);
-  }
-
-  toPrimitive(): BoardColumn {
-    const { id, tickets, boardId, ...primitive } = this.props;
-    return {
-      id: id as BoardColumnId,
-      ...primitive,
-      boardId: boardId as BoardId,
-    };
+    return new ColumnAggregate(props);
   }
 
   ticketsToPrimitive(): Ticket[] {
@@ -68,7 +53,7 @@ export class ColumnEntity extends Entity<ColumnDTO> {
 
   addTicket(ticket: Omit<TicketDTO, "index" | "columnId">, index: number) {
     const updatedTickets = insertAtIndex<TicketDTO>(
-      { ...ticket, index, columnId: this.id },
+      { ...ticket, index, columnId: this.id.toString() },
       this.tickets,
       index
     ).map((t, index) => ({ ...t, index }));
