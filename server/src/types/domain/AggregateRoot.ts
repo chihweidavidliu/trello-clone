@@ -3,7 +3,9 @@ import { UniqueEntityID } from "./UniqueEntityID";
 
 // TODO: read up on domain events https://github.com/stemmlerjs/white-label/blob/master/src/core/domain/AggregateRoot.ts
 
-export abstract class AggregateRoot<T> extends Entity<T> {
+export abstract class AggregateRoot<
+  T extends { id: string }
+> extends Entity<T> {
   //   private _domainEvents: IDomainEvent[] = [];
 
   get id(): UniqueEntityID {
