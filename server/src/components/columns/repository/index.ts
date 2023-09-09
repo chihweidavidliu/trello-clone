@@ -6,6 +6,8 @@ import { TicketDTO } from "shared-utils";
 import { ColumnAggregate } from "../domain/column.aggregate";
 import { InternalServerError } from "../../../errors/internal-server-error";
 import { columnMapper } from "../domain/column.mapper";
+import { TicketEntity } from "../domain/ticket.entity";
+import { ticketMapper } from "../domain/ticket.mapper";
 
 export interface ColumnsRepositoryProps {
   dbContext: Knex;
@@ -26,7 +28,7 @@ export class ColumnsRepository {
       .select("*")
       .whereIn("id", ids);
 
-    let tickets: TicketDTO[] = [];
+    let tickets: TicketEntity[] = [];
 
     const colIds = rawCols.map((col) => col.id);
 
@@ -44,10 +46,9 @@ export class ColumnsRepository {
 
     const assignedToUsersByTicketId = groupBy(assignedToUsers, "ticketId");
 
-    tickets = rawTickets.map((rawTicket) => ({
-      ...rawTicket,
-      assignedToUsers: assignedToUsersByTicketId[rawTicket.id],
-    }));
+    tickets = rawTickets.map((rawTicket) =>
+      ticketMapper.toDomain(rawTicket, assignedToUsersByTicketId[rawTicket.id])
+    );
 
     const ticketsByColId = groupBy(tickets, "columnId");
 
@@ -70,7 +71,10 @@ export class ColumnsRepository {
           .returning("*");
 
         const tickets = columns.reduce((acc, col) => {
-          acc = [...acc, ...col.ticketsToPrimitive()];
+          const ticketsForCol = col.tickets.map((t) =>
+            ticketMapper.toPersistence(t)
+          );
+          acc = [...acc, ...ticketsForCol];
           return acc;
         }, [] as Ticket[]);
 

@@ -8,7 +8,12 @@ import {
 import { TicketEntity } from "./ticket.entity";
 import { Mapper } from "../../../types/domain/Mapper";
 
-export interface TicketMapper extends Mapper<TicketEntity, Ticket, TicketDTO> {}
+export interface TicketMapper extends Mapper<TicketEntity, Ticket, TicketDTO> {
+  toDomain(
+    rawTicket: Ticket,
+    assignedToUsers: TicketAssignedToUser[]
+  ): TicketEntity;
+}
 
 export const ticketMapper: TicketMapper = {
   toPersistence(ticket: TicketEntity): Ticket {

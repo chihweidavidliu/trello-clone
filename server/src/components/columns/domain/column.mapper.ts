@@ -1,15 +1,17 @@
-import { ColumnDTO, TicketDTO } from "shared-utils";
+import { ColumnDTO } from "shared-utils";
 import {
   BoardColumn,
   BoardColumnId,
   BoardId,
 } from "../../../db/generated-types";
-import { ColumnAggregate } from "./column.aggregate";
+import { ColumnAggregate, ColumnAggregateProps } from "./column.aggregate";
 import { Mapper } from "../../../types/domain/Mapper";
+import { ticketMapper } from "./ticket.mapper";
+import { TicketEntity } from "./ticket.entity";
 
 export interface ColumnMapper
   extends Mapper<ColumnAggregate, BoardColumn, ColumnDTO> {
-  toDomain(rawColumn: BoardColumn, tickets: TicketDTO[]): ColumnAggregate;
+  toDomain(rawColumn: BoardColumn, tickets: TicketEntity[]): ColumnAggregate;
 }
 
 export const columnMapper: ColumnMapper = {
@@ -22,15 +24,18 @@ export const columnMapper: ColumnMapper = {
     };
   },
   toDTO(column: ColumnAggregate): ColumnDTO {
-    return column.props;
+    return {
+      ...column.props,
+      tickets: column.tickets.map((t) => ticketMapper.toDTO(t)),
+    };
   },
-  toDomain(rawColumn: BoardColumn, tickets: TicketDTO[]): ColumnAggregate {
-    const column: ColumnDTO = {
+  toDomain(rawColumn: BoardColumn, tickets: TicketEntity[]): ColumnAggregate {
+    const props: ColumnAggregateProps = {
       ...rawColumn,
       tickets,
     };
 
-    return ColumnAggregate.create(column);
+    return ColumnAggregate.create(props);
   },
 };
 

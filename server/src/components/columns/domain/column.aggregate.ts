@@ -1,68 +1,69 @@
-import {
-  ColumnDTO,
-  TicketDTO,
-  insertAtIndex,
-  shiftInArray,
-} from "shared-utils";
-import { BoardColumnId, Ticket, TicketId } from "../../../db/generated-types";
+import { insertAtIndex, shiftInArray } from "shared-utils";
 import { BadRequestError } from "../../../errors/bad-request-error";
 import { AggregateRoot } from "../../../types/domain/AggregateRoot";
+import { TicketEntity } from "./ticket.entity";
 
-export class ColumnAggregate extends AggregateRoot<ColumnDTO> {
-  private constructor(props: ColumnDTO) {
+export interface ColumnAggregateProps {
+  id: string;
+  title: string;
+  index: number;
+  createdAt: Date;
+  updatedAt: Date;
+  boardId: string;
+  tickets: TicketEntity[];
+}
+
+export class ColumnAggregate extends AggregateRoot<ColumnAggregateProps> {
+  private constructor(props: ColumnAggregateProps) {
     super(props);
   }
 
-  public static create(props: ColumnDTO) {
+  public static create(props: ColumnAggregateProps) {
     return new ColumnAggregate(props);
-  }
-
-  ticketsToPrimitive(): Ticket[] {
-    return this.tickets.map(({ id, columnId, ...ticket }) => {
-      return {
-        id: id as TicketId,
-        columnId: columnId as BoardColumnId,
-        ...ticket,
-      };
-    });
   }
 
   get id() {
     return this._id;
   }
 
-  get tickets(): TicketDTO[] {
+  get tickets(): TicketEntity[] {
     return this.props.tickets;
   }
 
-  removeTicket(ticketId: string): TicketDTO {
-    const ticket = this.tickets.find((ticket) => ticket.id === ticketId);
+  removeTicket(ticketId: string): TicketEntity {
+    const ticket = this.tickets.find(
+      (ticket) => ticket.id.toString() === ticketId
+    );
     if (!ticket) {
       throw new BadRequestError(
         `Failed to remove ticket ${ticketId} from column ${this.id}`
       );
     }
 
-    const updatedTickets = this.tickets
-      .filter((t) => t.id !== ticket.id)
-      .map((t, index) => ({ ...t, index }));
+    const updatedTickets: TicketEntity[] = this.tickets
+      .filter((t) => !t.id.equals(ticket.id))
+      .map((t, index) => t.updateIndex(index));
 
     this.props.tickets = updatedTickets;
     return ticket;
   }
 
-  addTicket(ticket: Omit<TicketDTO, "index" | "columnId">, index: number) {
-    const updatedTickets = insertAtIndex<TicketDTO>(
-      { ...ticket, index, columnId: this.id.toString() },
+  addTicket(ticket: TicketEntity, newIndex: number) {
+    ticket.updateColumnId(this.props.id);
+
+    const updatedTickets: TicketEntity[] = insertAtIndex<TicketEntity>(
+      ticket,
       this.tickets,
-      index
-    ).map((t, index) => ({ ...t, index }));
+      newIndex
+    ).map((t, index) => t.updateIndex(index));
 
     this.props.tickets = updatedTickets;
   }
 
   reorderTicket(ticketId: string, newIndex: number) {
-    const ticket = this.tickets.find((ticket) => ticket.id === ticketId);
+    const ticket = this.tickets.find(
+      (ticket) => ticket.id.toString() === ticketId
+    );
     if (!ticket) {
       throw new BadRequestError(
         `Ticket ${ticketId} not found in column ${this.id}`
@@ -71,9 +72,9 @@ export class ColumnAggregate extends AggregateRoot<ColumnDTO> {
 
     const updatedTickets = shiftInArray(
       this.tickets,
-      ticket.index,
+      ticket.props.index,
       newIndex
-    ).map((t, index) => ({ ...t, index }));
+    ).map((t, index) => t.updateIndex(index));
 
     this.props.tickets = updatedTickets;
   }

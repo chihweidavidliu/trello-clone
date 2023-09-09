@@ -1,5 +1,6 @@
 import { TicketDTO } from "shared-utils";
 import { ColumnsControllerProps } from ".";
+import { ticketMapper } from "../domain/ticket.mapper";
 
 export type MoveTicket = (
   ticketId: string,
@@ -26,7 +27,7 @@ export const createMoveTicket = ({
       const column = cols[0];
       column.reorderTicket(ticketId, indexInCol);
       await columnsRepository.save(column);
-      return column.tickets;
+      return column.tickets.map((t) => ticketMapper.toDTO(t));
     } else {
       const sourceCol = cols[0];
       const targetCol = cols[0];
@@ -36,10 +37,16 @@ export const createMoveTicket = ({
 
       await columnsRepository.save([sourceCol, targetCol]);
 
-      return [sourceCol, targetCol].reduce((acc, c) => {
-        acc = { ...acc, ...c.tickets };
-        return acc;
-      }, [] as TicketDTO[]);
+      const result: TicketDTO[] = [sourceCol, targetCol].reduce<TicketDTO[]>(
+        (acc, c) => {
+          const ticketDTOs = c.tickets.map((t) => ticketMapper.toDTO(t));
+          acc = [...acc, ...ticketDTOs];
+          return acc;
+        },
+        []
+      );
+
+      return result;
     }
   };
 };
