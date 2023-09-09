@@ -1,5 +1,5 @@
 import { TicketDTO } from "shared-utils";
-import { TicketsControllerProps } from ".";
+import { ColumnsControllerProps } from ".";
 
 export type MoveTicket = (
   ticketId: string,
@@ -10,7 +10,7 @@ export type MoveTicket = (
 
 export const createMoveTicket = ({
   columnsRepository,
-}: TicketsControllerProps): MoveTicket => {
+}: ColumnsControllerProps): MoveTicket => {
   return async (ticketId, sourceColId, newColId, indexInCol) => {
     // TODO: check user has permission to edit the board (method on the column entity)
 
