@@ -3,6 +3,7 @@ import { useState } from "react";
 import { shiftInArray, insertAtIndex } from "shared-utils";
 import ColumnComponent from "@/components/Column";
 import { BoardDTO, ColumnDTO, TicketDTO } from "shared-utils";
+import { moveTicket } from "./api";
 
 export interface BoardPageClientProps {
   board: BoardDTO;
@@ -29,7 +30,19 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
       newColId,
       indexInNewCol,
     });
+
     const ticket = ticketsById[ticketId];
+
+    // TODO: use computed result to set state?
+    try {
+      await moveTicket(ticketId, {
+        sourceColId: ticket.columnId,
+        newColId,
+        newIndex: indexInNewCol,
+      });
+    } catch (error) {
+      alert(error);
+    }
 
     const updatedCols = columns.map((column) => {
       const tickets = column?.tickets || [];

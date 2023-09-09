@@ -3,6 +3,7 @@ import {
   MoveTicketBodySchema,
   MoveTicketParamSchema,
   MoveTicketPayload,
+  MoveTicketResponse,
 } from "shared-utils";
 import { validateRequest } from "../../middlewares/validate-request";
 import { ColumnsController } from "./controller";
@@ -17,7 +18,7 @@ export const createColumnsRouter = ({
   const router = express.Router();
 
   router.patch(
-    "/ticket/:ticketId/move",
+    "/columns/move-ticket/:ticketId",
     validateRequest({
       params: MoveTicketParamSchema,
       body: MoveTicketBodySchema,
@@ -26,19 +27,22 @@ export const createColumnsRouter = ({
       const ticketId: string = req.params.ticketId;
       const body: MoveTicketPayload = req.body;
 
-      await ticketsController.moveTicket(
+      const updatedTickets = await ticketsController.moveTicket(
         ticketId,
         body.sourceColId,
         body.newColId,
         body.newIndex
       );
 
-      res.status(200).send({
+      const response: MoveTicketResponse = {
         errors: null,
         data: {
           success: true,
+          updatedTickets,
         },
-      });
+      };
+
+      res.status(200).send(response);
     }
   );
 
