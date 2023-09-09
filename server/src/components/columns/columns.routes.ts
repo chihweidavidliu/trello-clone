@@ -8,11 +8,11 @@ import { validateRequest } from "../../middlewares/validate-request";
 import { ColumnsController } from "./controller";
 
 export interface TicketsRouterProps {
-  ticketsController: ColumnsController;
+  columnsController: ColumnsController;
 }
 
-export const createBoardsRouter = ({
-  ticketsController,
+export const createColumnsRouter = ({
+  columnsController: ticketsController,
 }: TicketsRouterProps) => {
   const router = express.Router();
 

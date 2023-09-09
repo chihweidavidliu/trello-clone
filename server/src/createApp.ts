@@ -6,6 +6,9 @@ import { BoardsRepository } from "./components/boards/repository";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { Knex } from "knex";
+import { createColumnsRouter } from "./components/columns/columns.routes";
+import { createColumnsController } from "./components/columns/controller";
+import { ColumnsRepository } from "./components/columns/repository";
 
 export interface AppProps {
   port: number;
@@ -37,6 +40,18 @@ export const createApp = ({ port, dbContext }: AppProps) => {
   });
 
   app.use(boardsRouter);
+
+  const columnsRepository = new ColumnsRepository({ dbContext });
+
+  const columnsController = createColumnsController({
+    columnsRepository,
+  });
+
+  const columnsRouter = createColumnsRouter({
+    columnsController: columnsController,
+  });
+
+  app.use(columnsRouter);
 
   app.all("*", () => {
     throw new NotFoundError();
