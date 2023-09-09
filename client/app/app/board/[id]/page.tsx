@@ -1,9 +1,10 @@
 import { BoardDTO, GetBoardByIdResponse } from "shared-utils";
 import BoardPageClient from "./BoardPageClient";
+import { config } from "@/config";
 
 async function getBoardData(id: string): Promise<BoardDTO> {
   const res = await fetch(
-    `http://localhost:5000/boards/${id}?include=columns,tickets`
+    `${config().api.boardServiceBaseUrl}/boards/${id}?include=columns,tickets`
   );
 
   const json: GetBoardByIdResponse = await res.json();
