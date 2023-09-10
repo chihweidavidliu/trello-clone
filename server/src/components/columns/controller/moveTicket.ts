@@ -1,6 +1,7 @@
 import { TicketDTO } from "shared-utils";
 import { ColumnsControllerProps } from ".";
 import { ticketMapper } from "../domain/ticket.mapper";
+import { InternalServerError } from "../../../errors/internal-server-error";
 
 export type MoveTicket = (
   ticketId: string,
@@ -20,17 +21,31 @@ export const createMoveTicket = ({
       colsToLoad.push(newColId);
     }
 
-    const cols = await columnsRepository.getColumnsById(colsToLoad);
-
     // moving ticket within same column
-    if (cols.length === 1) {
-      const column = cols[0];
+    if (sourceColId === newColId) {
+      const [column] = await columnsRepository.getColumnsById([sourceColId]);
       column.reorderTicket(ticketId, indexInCol);
       await columnsRepository.save(column);
       return column.tickets.map((t) => ticketMapper.toDTO(t));
     } else {
-      const sourceCol = cols[0];
-      const targetCol = cols[1];
+      const columns = await columnsRepository.getColumnsById([
+        sourceColId,
+        newColId,
+      ]);
+
+      const sourceCol = columns.find(
+        (col) => col.id.toString() === sourceColId
+      );
+
+      const targetCol = columns.find((col) => col.id.toString() === newColId);
+
+      if (!sourceCol || !targetCol) {
+        throw new InternalServerError(`Could not find source or target col`);
+      }
+
+      console.log(
+        `Moving ticket from ${sourceCol.props.title} to ${targetCol.props.title}`
+      );
 
       const removedTicket = sourceCol.removeTicket(ticketId);
       targetCol.addTicket(removedTicket, indexInCol);

@@ -33,17 +33,6 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
 
     const ticket = ticketsById[ticketId];
 
-    // TODO: use computed result to set state?
-    try {
-      await moveTicket(ticketId, {
-        sourceColId: ticket.columnId,
-        newColId,
-        newIndex: indexInNewCol,
-      });
-    } catch (error) {
-      alert(error);
-    }
-
     const updatedCols = columns.map((column) => {
       const tickets = column?.tickets || [];
 
@@ -95,6 +84,16 @@ export default function BoardPageClient({ board }: BoardPageClientProps) {
     setColumns(updatedCols);
 
     console.log("updatedCols", updatedCols);
+
+    try {
+      await moveTicket(ticketId, {
+        sourceColId: ticket.columnId,
+        newColId,
+        newIndex: indexInNewCol,
+      });
+    } catch (error) {
+      alert(error);
+    }
   };
 
   console.log("columns", columns);
