@@ -2,11 +2,11 @@ import { Knex } from "knex";
 import groupBy from "lodash/groupBy";
 
 import { BoardColumn, Ticket } from "../../../db/generated-types";
-import { ColumnAggregate } from "../domain/column.aggregate";
+import { ColumnAggregate } from "./column.aggregate";
 import { InternalServerError } from "../../../errors/internal-server-error";
-import { columnMapper } from "../domain/column.mapper";
-import { TicketEntity } from "../domain/ticket.entity";
-import { ticketMapper } from "../domain/ticket.mapper";
+import { columnMapper } from "./column.mapper";
+import { TicketEntity } from "./ticket.entity";
+import { ticketMapper } from "./ticket.mapper";
 
 export interface ColumnsRepositoryProps {
   dbContext: Knex;

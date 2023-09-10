@@ -1,6 +1,6 @@
 import { BoardDTO } from "shared-utils";
 import { BoardsControllerProps } from ".";
-import { BoardIncludeOptions } from "../repository";
+import { BoardIncludeOptions } from "../queries";
 
 export type GetBoardById = (
   id: string,

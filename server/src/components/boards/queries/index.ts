@@ -8,16 +8,16 @@ export interface BoardIncludeOptions {
   tickets: boolean;
 }
 
-export interface BoardsRepositoryProps {
+export interface BoardsQueriesProps {
   dbContext: Knex;
 }
 
-export interface BoardsRepository {}
+export interface BoardsQueries {}
 
-export class BoardsRepository {
+export class BoardsQueries {
   private dbContext: Knex;
 
-  constructor({ dbContext }: BoardsRepositoryProps) {
+  constructor({ dbContext }: BoardsQueriesProps) {
     this.dbContext = dbContext;
   }
 

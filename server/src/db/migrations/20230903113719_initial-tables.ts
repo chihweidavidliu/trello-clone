@@ -49,12 +49,12 @@ export async function up(knex: Knex): Promise<void> {
     });
 
   // add update triggers
-  await knex.schema.raw(onUpdateTrigger("board"));
-  await knex.raw(onUpdateTrigger("board_column"));
-  await knex.raw(onUpdateTrigger("ticket"));
-  await knex.raw(onUpdateTrigger("role"));
-  await knex.raw(onUpdateTrigger("ticket_assigned_to_user"));
-  await knex.raw(onUpdateTrigger("board_user_role"));
+  // await knex.schema.raw(onUpdateTrigger("board"));
+  // await knex.raw(onUpdateTrigger("board_column"));
+  // await knex.raw(onUpdateTrigger("ticket"));
+  // await knex.raw(onUpdateTrigger("role"));
+  // await knex.raw(onUpdateTrigger("ticket_assigned_to_user"));
+  // await knex.raw(onUpdateTrigger("board_user_role"));
 }
 
 export async function down(knex: Knex): Promise<void> {

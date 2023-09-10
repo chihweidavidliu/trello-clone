@@ -1,4 +1,4 @@
-import { ColumnsRepository } from "../repository";
+import { ColumnsRepository } from "../domain/columns.repository";
 import { MoveTicket, createMoveTicket } from "./moveTicket";
 
 export interface ColumnsControllerProps {

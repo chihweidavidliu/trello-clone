@@ -1,8 +1,8 @@
-import { BoardsRepository } from "../repository";
+import { BoardsQueries } from "../queries";
 import { createGetBoardsById, GetBoardById } from "./getBoardById";
 
 export interface BoardsControllerProps {
-  boardsRepository: BoardsRepository;
+  boardsRepository: BoardsQueries;
 }
 
 export interface BoardsController {

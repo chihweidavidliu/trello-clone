@@ -3,13 +3,13 @@ import cors from "cors";
 require("express-async-errors");
 import { createBoardsRouter } from "./components/boards/boards.routes";
 import { createBoardsController } from "./components/boards/controller";
-import { BoardsRepository } from "./components/boards/repository";
+import { BoardsQueries } from "./components/boards/queries";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { Knex } from "knex";
 import { createColumnsRouter } from "./components/columns/columns.routes";
 import { createColumnsController } from "./components/columns/controller";
-import { ColumnsRepository } from "./components/columns/repository";
+import { ColumnsRepository } from "./components/columns/domain/columns.repository";
 
 export interface AppProps {
   port: number;
@@ -31,7 +31,7 @@ export const createApp = ({ port, dbContext }: AppProps) => {
     res.status(200).send("Ok");
   });
 
-  const boardsRepository = new BoardsRepository({
+  const boardsRepository = new BoardsQueries({
     dbContext,
   });
 
