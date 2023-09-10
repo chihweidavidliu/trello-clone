@@ -60,7 +60,8 @@ export class BoardsRepository {
       const rawColumnns = await this.dbContext
         .table("board_column")
         .select("*")
-        .where("boardId", board.id);
+        .where("boardId", board.id)
+        .orderBy("index", "asc");
 
       let tickets: TicketDTO[] = [];
 

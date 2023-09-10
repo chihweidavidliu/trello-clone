@@ -70,7 +70,6 @@ export class ColumnsRepository {
           return acc;
         }, []);
 
-
         await trx
           .table("ticket")
           .insert(ticketInserts)
