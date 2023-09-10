@@ -17,11 +17,14 @@ export interface ColumnMapper
 export const columnMapper: ColumnMapper = {
   toPersistence(column: ColumnAggregate) {
     const { id, tickets, boardId, ...primitive } = column.props;
-    return {
+
+    const persistenceObject = {
       id: id as BoardColumnId,
       ...primitive,
       boardId: boardId as BoardId,
     };
+
+    return persistenceObject;
   },
   toDTO(column: ColumnAggregate): ColumnDTO {
     return {
@@ -32,7 +35,7 @@ export const columnMapper: ColumnMapper = {
   toDomain(rawColumn: BoardColumn, tickets: TicketEntity[]): ColumnAggregate {
     const props: ColumnAggregateProps = {
       ...rawColumn,
-      tickets,
+      tickets: tickets || [],
     };
 
     return ColumnAggregate.create(props);
