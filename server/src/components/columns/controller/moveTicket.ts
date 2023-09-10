@@ -24,6 +24,13 @@ export const createMoveTicket = ({
     // moving ticket within same column
     if (sourceColId === newColId) {
       const [column] = await columnsRepository.getColumnsById([sourceColId]);
+
+      if (!column) {
+        throw new InternalServerError(
+          `Could not find column with id ${sourceColId}`
+        );
+      }
+
       column.reorderTicket(ticketId, indexInCol);
       await columnsRepository.save(column);
       return column.tickets.map((t) => ticketMapper.toDTO(t));
