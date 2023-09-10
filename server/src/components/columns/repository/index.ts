@@ -1,8 +1,7 @@
 import { Knex } from "knex";
 import groupBy from "lodash/groupBy";
 
-import { Ticket } from "../../../db/generated-types";
-import { TicketDTO } from "shared-utils";
+import { BoardColumn, Ticket } from "../../../db/generated-types";
 import { ColumnAggregate } from "../domain/column.aggregate";
 import { InternalServerError } from "../../../errors/internal-server-error";
 import { columnMapper } from "../domain/column.mapper";
@@ -28,8 +27,6 @@ export class ColumnsRepository {
       .select("*")
       .whereIn("id", ids);
 
-    let tickets: TicketEntity[] = [];
-
     const colIds = rawCols.map((col) => col.id);
 
     const rawTickets = await this.dbContext
@@ -46,15 +43,16 @@ export class ColumnsRepository {
 
     const assignedToUsersByTicketId = groupBy(assignedToUsers, "ticketId");
 
-    tickets = rawTickets.map((rawTicket) =>
+    const tickets: TicketEntity[] = rawTickets.map((rawTicket) =>
       ticketMapper.toDomain(rawTicket, assignedToUsersByTicketId[rawTicket.id])
     );
 
     const ticketsByColId = groupBy(tickets, "columnId");
 
-    return rawCols.map((rawCol) =>
-      columnMapper.toDomain(rawCol, ticketsByColId[rawCol.id])
-    );
+    return rawCols.map((rawCol) => {
+      const ticketsForCol = ticketsByColId[rawCol.id];
+      return columnMapper.toDomain(rawCol, ticketsForCol);
+    });
   }
 
   async save(
@@ -62,28 +60,42 @@ export class ColumnsRepository {
   ): Promise<ColumnAggregate[]> {
     try {
       const columns = Array.isArray(col) ? col : [col];
-      await this.dbContext.transaction(async (trx) => {
-        await trx
-          .table("board_column")
-          .insert(columns.map((col) => columnMapper.toPersistence(col)))
-          .onConflict("id")
-          .merge()
-          .returning("*");
 
-        const tickets = columns.reduce((acc, col) => {
+      const updatedCols = await this.dbContext.transaction(async (trx) => {
+        const ticketInserts = columns.reduce<Ticket[]>((acc, col) => {
           const ticketsForCol = col.tickets.map((t) =>
             ticketMapper.toPersistence(t)
           );
           acc = [...acc, ...ticketsForCol];
           return acc;
-        }, [] as Ticket[]);
+        }, []);
 
-        await trx.table("ticket").insert(tickets);
+
+        await trx
+          .table("ticket")
+          .insert(ticketInserts)
+          .onConflict("id")
+          .merge(["index", "title", "description", "columnId", "updatedAt"]);
+
+        const colInserts: BoardColumn[] = columns.map((col) =>
+          columnMapper.toPersistence(col)
+        );
+
+        await trx
+          .table("board_column")
+          .insert(colInserts)
+          .onConflict("id")
+          .merge(["index", "title", "boardId", "updatedAt"])
+          .returning("*");
+
+        return columns;
       });
 
-      return columns;
+      return updatedCols;
     } catch (error) {
-      throw new InternalServerError("Error saving columns");
+      throw new InternalServerError(
+        `Error saving columns ${error instanceof Error ? error?.message : ""}`
+      );
     }
   }
 }
