@@ -72,7 +72,6 @@ export class BoardsRepository {
           .select("*")
           .whereIn("columnId", colIds);
 
-        console.log("rawTickets", rawTickets);
         const ticketIds = rawTickets.map((ticket) => ticket.id);
 
         const assignedToUsers = await this.dbContext

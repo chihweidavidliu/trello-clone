@@ -30,7 +30,7 @@ export const createMoveTicket = ({
       return column.tickets.map((t) => ticketMapper.toDTO(t));
     } else {
       const sourceCol = cols[0];
-      const targetCol = cols[0];
+      const targetCol = cols[1];
 
       const removedTicket = sourceCol.removeTicket(ticketId);
       targetCol.addTicket(removedTicket, indexInCol);

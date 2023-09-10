@@ -10,6 +10,9 @@ export async function moveTicket(
     {
       method: "PATCH",
       body: JSON.stringify(payload),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
     }
   );
 
