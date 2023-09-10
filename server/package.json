@@ -7,7 +7,7 @@
     "test": "yarn docker:up && yarn migrate-test && yarn seed-test && dotenv -e .env.test -- jest -i --detectOpenHandles",
     "tsc": "rm -rf ./build && tsc",
     "dev": "dotenv -e .env -- ts-node-dev ./src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "start": "dotenv -e .env -- node ./build/index.js",
     "check-types": "tsc --noEmit",
     "build-types": "dotenv -e .env -- ts-node-dev ./src/db/kanel.ts",
