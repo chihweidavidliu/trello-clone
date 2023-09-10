@@ -50,6 +50,33 @@ describe("PATCH /columns/move-ticket/:ticketId", () => {
     });
   });
 
+  it("should return 400 if the ticket can't be retrieved", async () => {
+    const ticketId = uuid(); // doesn't exist
+    const { columns } = await createTestBoard(knex, "test-user-woo");
+    const sourceCol = columns[0];
+    const targetCol = columns[1];
+
+    const payload: MoveTicketPayload = {
+      sourceColId: sourceCol.id,
+      newColId: targetCol.id,
+      newIndex: 0,
+    };
+
+    const response = await request(app)
+      .patch(createTestEndpoint(ticketId))
+      .send(payload);
+
+    expect(response.status).toEqual(400);
+    expect(response.body).toEqual({
+      errors: [
+        {
+          message: `Failed to remove ticket ${ticketId} from column ${sourceCol.id}`,
+        },
+      ],
+      data: null,
+    });
+  });
+
   it.todo("should return 401 if user is not authenticated");
 
   it.todo(

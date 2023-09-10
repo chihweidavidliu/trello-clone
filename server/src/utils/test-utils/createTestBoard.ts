@@ -40,15 +40,18 @@ export const createTestBoard = async (client: Knex, userId: string) => {
     throw new Error("Error creating test columns");
   }
 
-  await client.table("ticket").insert([
-    {
-      columnId: columns[0].id,
-      title: "Add tests",
-      description: "This is a description",
-      createdByUserId: userId,
-      index: 0,
-    },
-  ]);
+  const [ticket] = await client
+    .table("ticket")
+    .insert([
+      {
+        columnId: columns[0].id,
+        title: "Add tests",
+        description: "This is a description",
+        createdByUserId: userId,
+        index: 0,
+      },
+    ])
+    .returning("*");
 
-  return { board, columns };
+  return { board, columns, ticket };
 };
