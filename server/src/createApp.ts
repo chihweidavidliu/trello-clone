@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 require("express-async-errors");
 import { createBoardsRouter } from "./components/boards/boards.routes";
 import { createBoardsController } from "./components/boards/controller";
@@ -18,10 +19,13 @@ export interface AppProps {
 export const createApp = ({ port, dbContext }: AppProps) => {
   // TODO: logging
   const app = express();
+  app.use(cors());
   app.use(express.json());
-  app.use(express.urlencoded());
-
-  // TODO: cors
+  app.use(
+    express.urlencoded({
+      extended: true,
+    })
+  );
 
   app.get("/healthcheck", async (req, res) => {
     res.status(200).send("Ok");
