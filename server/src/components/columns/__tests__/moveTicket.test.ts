@@ -2,7 +2,10 @@ import request from "supertest";
 import { v4 as uuid } from "uuid";
 import { createApp } from "../../../createApp";
 import { config } from "../../../config";
-import { createTestBoard } from "../../../utils/test-utils/createTestBoard";
+import {
+  createTestBoard,
+  createTestTicket,
+} from "../../../utils/test-utils/createTestBoard";
 import { knex } from "../../../db/knex";
 import { MoveTicketPayload } from "shared-utils";
 
@@ -77,9 +80,79 @@ describe("PATCH /columns/move-ticket/:ticketId", () => {
     });
   });
 
+  it("should return 200 and move ticket from one board to another", async () => {
+    const { columns, ticket } = await createTestBoard(knex, "test-user-woo");
+
+    const sourceCol = columns[0];
+    const targetCol = columns[1];
+
+    const payload: MoveTicketPayload = {
+      sourceColId: sourceCol.id,
+      newColId: targetCol.id,
+      newIndex: 0,
+    };
+
+    const response = await request(app)
+      .patch(createTestEndpoint(ticket.id))
+      .send(payload);
+
+    expect(response.status).toEqual(200);
+    const updatedTicket = await knex
+      .table("ticket")
+      .select("*")
+      .where("id", ticket.id)
+      .first();
+    expect(updatedTicket?.columnId).toEqual(targetCol.id);
+    expect(updatedTicket?.index).toEqual(0);
+  });
+
+  it("should return 200 and move ticket within a board", async () => {
+    const { columns, ticket } = await createTestBoard(knex, "test-user-woo");
+    const sourceCol = columns[0];
+
+    const [secondTicket] = await createTestTicket(knex, {
+      title: "second ticket",
+      description: "woo",
+      index: 1,
+      columnId: sourceCol.id,
+      createdByUserId: "test-user-woo",
+    });
+
+    expect(secondTicket?.index).toEqual(1);
+
+    const payload: MoveTicketPayload = {
+      sourceColId: sourceCol.id,
+      newColId: sourceCol.id,
+      newIndex: 1,
+    };
+
+    const response = await request(app)
+      .patch(createTestEndpoint(ticket.id))
+      .send(payload);
+
+    expect(response.status).toEqual(200);
+
+    const updatedTicket = await knex
+      .table("ticket")
+      .select("*")
+      .where("id", ticket.id)
+      .first();
+
+    expect(updatedTicket?.columnId).toEqual(sourceCol.id);
+    expect(updatedTicket?.index).toEqual(1);
+
+    const updatedSecondTicket = await knex
+      .table("ticket")
+      .select("*")
+      .where("id", secondTicket.id)
+      .first();
+
+    expect(updatedSecondTicket?.index).toEqual(0);
+  });
+
   it.todo("should return 401 if user is not authenticated");
 
   it.todo(
-    "should return 401 if user does not have permission to view the board"
+    "should return 401 if user does not have permission to edit the board"
   );
 });

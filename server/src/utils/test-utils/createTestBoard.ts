@@ -1,4 +1,5 @@
 import { Knex } from "knex";
+import { Ticket, TicketInitializer } from "../../db/generated-types";
 
 export const createTestBoard = async (client: Knex, userId: string) => {
   const [board] = await client
@@ -40,18 +41,23 @@ export const createTestBoard = async (client: Knex, userId: string) => {
     throw new Error("Error creating test columns");
   }
 
-  const [ticket] = await client
-    .table("ticket")
-    .insert([
-      {
-        columnId: columns[0].id,
-        title: "Add tests",
-        description: "This is a description",
-        createdByUserId: userId,
-        index: 0,
-      },
-    ])
-    .returning("*");
+  const [ticket] = await createTestTicket(client, [
+    {
+      columnId: columns[0].id,
+      title: "Add tests",
+      description: "This is a description",
+      createdByUserId: userId,
+      index: 0,
+    },
+  ]);
 
   return { board, columns, ticket };
+};
+
+export const createTestTicket = async (
+  client: Knex,
+  tickets: TicketInitializer[] | TicketInitializer
+): Promise<Ticket[]> => {
+  const rows = await client.table("ticket").insert(tickets).returning("*");
+  return rows;
 };
