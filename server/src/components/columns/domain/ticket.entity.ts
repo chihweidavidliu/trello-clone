@@ -29,6 +29,10 @@ export class TicketEntity extends Entity<TicketEntityProps> {
     return this._id;
   }
 
+  get columnId() {
+    return this.props.columnId;
+  }
+
   updateIndex(newIndex: number): TicketEntity {
     this.props.index = newIndex;
     return this;

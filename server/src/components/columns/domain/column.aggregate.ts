@@ -10,7 +10,7 @@ export interface ColumnAggregateProps {
   createdAt: Date;
   updatedAt: Date;
   boardId: string;
-  tickets: TicketEntity[];
+  tickets?: TicketEntity[];
 }
 
 export class ColumnAggregate extends AggregateRoot<ColumnAggregateProps> {
@@ -27,7 +27,7 @@ export class ColumnAggregate extends AggregateRoot<ColumnAggregateProps> {
   }
 
   get tickets(): TicketEntity[] {
-    return this.props.tickets;
+    return this.props.tickets || [];
   }
 
   removeTicket(ticketId: string): TicketEntity {

@@ -18,11 +18,19 @@ export interface TicketMapper extends Mapper<TicketEntity, Ticket, TicketDTO> {
 export const ticketMapper: TicketMapper = {
   toPersistence(ticket: TicketEntity): Ticket {
     const props = ticket.props;
-    return {
-      ...props,
+
+    const result: Ticket = {
       id: props.id as TicketId,
+      title: props.title,
+      description: props.description,
+      index: props.index,
+      createdAt: props.createdAt,
+      updatedAt: props.updatedAt,
+      createdByUserId: props.createdByUserId,
       columnId: props.columnId as BoardColumnId,
     };
+
+    return result;
   },
   toDTO(ticket: TicketEntity): TicketDTO {
     return ticket.props;
