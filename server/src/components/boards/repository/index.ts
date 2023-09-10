@@ -71,7 +71,8 @@ export class BoardsRepository {
         const rawTickets = await this.dbContext
           .table("ticket")
           .select("*")
-          .whereIn("columnId", colIds);
+          .whereIn("columnId", colIds)
+          .orderBy("index", "asc");
 
         const ticketIds = rawTickets.map((ticket) => ticket.id);
 
